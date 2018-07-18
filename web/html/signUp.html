@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title>Title</title>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <title>Signin Template for Bootstrap</title>
+    <!-- Bootstrap core CSS -->
+    <link th:href="'/'+${local}+'/css/core/bootstrap.min.css'" rel="stylesheet">
+    <link th:href="'/'+${local}+'/css/signUp.css'" rel="stylesheet">
+</head>
+<body>
+    <p id="web-local" th:text="${local}" style="display: none;"></p>
+    <div class="main-container">
+        <input id="account" type="text" class="form-control">
+        <input id="password" type="password" class="form-control">
+        <input id="re-password" type="text" class="form-control">
+        <input id="username" type="text" class="form-control">
+
+    </div>
+
+
+
+    <script th:src="'/'+${local}+'/js/core/jquery-3.2.1.js'"></script>
+</body>
+</html>
