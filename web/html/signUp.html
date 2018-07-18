@@ -12,15 +12,12 @@
 <body>
     <p id="web-local" th:text="${local}" style="display: none;"></p>
     <div class="main-container">
-        <input id="account" type="text" class="form-control">
-        <input id="password" type="password" class="form-control">
-        <input id="re-password" type="text" class="form-control">
-        <input id="username" type="text" class="form-control">
+        <p>账号:<input id="account" type="text" class="form-control"></p>
+        <p>密码:<input id="password" type="password" class="form-control"></p>
+        <p>密码确认:<input id="re-password" type="password" class="form-control"></p>
+        <p>昵称<input id="username" type="text" class="form-control"></p>
 
     </div>
-
-
-
     <script th:src="'/'+${local}+'/js/core/jquery-3.2.1.js'"></script>
 </body>
 </html>

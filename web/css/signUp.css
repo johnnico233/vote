@@ -3,3 +3,9 @@
     margin: 20px auto;
     border:1px solid #000;
 }
+
+.main-container input{
+    width:60%;
+    margin:10px 5%;
+    display: inline-block;
+}
