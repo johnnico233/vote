@@ -1,5 +1,11 @@
 package vote.domain;
 
+import com.fasterxml.jackson.databind.JsonDeserializer;
+import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
+import com.fasterxml.jackson.databind.annotation.JsonSerialize;
+import vote.config.JsonDateSerializer;
+import vote.config.JsonDecDateSerializer;
+
 import java.util.Date;
 
 public class User extends PrivateUser{
@@ -9,11 +15,14 @@ public class User extends PrivateUser{
     private String email;
     private String whatsUp;
     private Date createTime;
+    @JsonSerialize(using= JsonDateSerializer.class)
+    @JsonDeserialize(using= JsonDecDateSerializer.class)
+    private Date birth;
 
     public User() {
     }
 
-    public User(String account, int userId, String password, int type, String username, String sex, String phone, String email, String whatsUp, Date createTime) {
+    public User(String account, int userId, String password, int type, String username, String sex, String phone, String email, String whatsUp, Date createTime, Date birth) {
         super(account, userId, password, type);
         this.username = username;
         this.sex = sex;
@@ -21,6 +30,7 @@ public class User extends PrivateUser{
         this.email = email;
         this.whatsUp = whatsUp;
         this.createTime = createTime;
+        this.birth = birth;
     }
 
     public String getUsername() {
@@ -71,6 +81,14 @@ public class User extends PrivateUser{
         this.createTime = createTime;
     }
 
+    public Date getBirth() {
+        return birth;
+    }
+
+    public void setBirth(Date birth) {
+        this.birth = birth;
+    }
+
     @Override
     public String toString() {
         return "User{" +
@@ -80,6 +98,7 @@ public class User extends PrivateUser{
                 ", email='" + email + '\'' +
                 ", whatsUp='" + whatsUp + '\'' +
                 ", createTime=" + createTime +
+                ", birth=" + birth +
                 ", account='" + account + '\'' +
                 ", userId=" + userId +
                 ", password='" + password + '\'' +

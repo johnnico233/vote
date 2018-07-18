@@ -17,6 +17,6 @@
         </environment>
     </environments>
     <mappers>
-        <mapper resource="db/PrivateUser.xml"/>
+        <mapper resource="db/User.xml"/>
     </mappers>
 </configuration>

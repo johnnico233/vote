@@ -84,7 +84,7 @@ function clickHandler(){
             $("p:first-of-type >span").css("visibility","visible");
             $("p:first-of-type >span").css("color","red");
         }
-    })
+    });
     $("#password").on("blur",function(){
         var length=$("#password").val().length;
         var hint=$("p:nth-of-type(2) >span");
@@ -101,7 +101,7 @@ function clickHandler(){
             hint.html("密码符合要求");
             isValid=true;
         }
-    })
+    });
     $("#re-password").on("blur",function(){
         var hint=$("p:nth-of-type(3) >span");
         hint.css("visibility","visible");
@@ -116,7 +116,7 @@ function clickHandler(){
             $("#re-password").css("margin-right","7%");
             isValid=true;
         }
-    })
+    });
     $("#username").on("blur",function(){
         var username=$("#username").val();
         var length=$.trim(username).length;
@@ -133,7 +133,69 @@ function clickHandler(){
             sendSth2Server("/"+$("#web-local").html()+"/signUp/checkUserName",{"username":$.trim(username)},
                 hint, "昵称目前可用","昵称已经存在");
         }
+    });
+    $("#phone").on("blur",function(){
+        var phone=$("#phone").val();
+        var hint=$("p:nth-of-type(6) >span");
+        var length=$.trim(phone).length;
+        hint.css("visibility","visible");
+        if(length>0){
+            $("#phone").css("margin-right","4%");
+            sendSth2Server("/"+$("#web-local").html()+"/signUp/checkUserPhone",{"phone":$.trim(phone)},
+                hint, "当前号码可以使用","电话号码已被注册");
+        }
+        else{
+            $("#phone").css("margin-right","6%");
+            hint.css("color","red");
+            hint.html("请输入电话号码");
+        }
+    });
+    $("#email").on("blur",function(){
+        var email=$("#email").val();
+        var hint=$("p:nth-of-type(7) >span");
+        var length=$.trim(email).length;
+        hint.css("visibility","visible");
+        if(length>0){
+            $("#email").css("margin-right","5%");
+            sendSth2Server("/"+$("#web-local").html()+"/signUp/checkUserEmail",{"email":$.trim(email)},
+                hint, "该邮箱可使用","邮箱已经存在");
+        }else{
+            hint.css("color","red");
+            hint.html("请输入邮箱");
+            $("#email").css("margin-right","7%");
+        }
+    });
+    $(".sign-up-btn").on("click",function(){
+        sendSignUpInfo2Server();
     })
+}
+function sendSignUpInfo2Server(){
+    var data={"account":$("#account").val(),"password":$("#password").val(),"username":$("#username").val(),
+              "birth":$("#year").val()+"-"+$("#month").val()+"-"+$("#day").val(),"phone":$("#phone").val(),
+        "email":$("#email").val(),"sex":$("input[type=radio]:checked").val(),"type":2};
+    $.ajax({
+        url:"/"+$("#web-local").html()+"/signUp/addNewUser",
+        type:"post",
+        dataType:"json",
+        data:JSON.stringify(data),
+        headers:{'Content-type':'application/json;charset=utf-8'}
+    }).done(function(json){
+        var hint={'ACCOUNT_EXIST':1,'USERNAME_EXIST':4,
+            'PHONE_EXIST':6,"EMAIL_EXIST":7};
+        var location={1:"账号已经被注册",4:"昵称已经存在",6:"电话号码已被注册",7:"邮箱已经存在"};
+        console.log(json);
+        if(json.code=="SUCCESS")
+            alert("注册成功");
+        else{
+            var pos=hint[json.code];
+            var hint=$("p").eq(pos).find("span");
+            hint.css("color","red");
+            hint.html(location[pos]);
+        }
+    }).fail(function(xhr,status,errorThrown){
+        alert("there is something wrong with server");
+        isValid=false;
+    });
 }
 function sendSth2Server(url,data,errorHint,successWord,errorWord){
     console.log(errorHint);
@@ -158,5 +220,6 @@ function sendSth2Server(url,data,errorHint,successWord,errorWord){
         }
     }).fail(function(xhr,status,errorThrown){
         alert("there is something wrong with server");
+        isValid=false;
     });
 }

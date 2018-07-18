@@ -12,6 +12,8 @@ import vote.domain.User;
 import vote.result.Result;
 import vote.result.ResultCode;
 
+import java.util.List;
+
 @Controller
 @RequestMapping("/signUp")
 public class SignUpController {
@@ -22,15 +24,33 @@ public class SignUpController {
         return "signUp";
     }
     @RequestMapping(value = "/accountCheck",method = RequestMethod.POST)
-    public @ResponseBody SignUpResult checkUserExist(@RequestBody PrivateUser privateUser){
+    public @ResponseBody SignUpResult checkUserNotExist(@RequestBody PrivateUser privateUser){
         ResultCode resultCode=userDao.checkUserExist(privateUser);
         return new SignUpResult(resultCode==ResultCode.ACCOUNT_NOT_EXIST?true:false);
     }
     @RequestMapping(value = "/checkUserName",method = RequestMethod.POST)
-    public @ResponseBody SignUpResult checkUserNameExist(@RequestBody User user){
-
-        return new SignUpResult(false);
+    public @ResponseBody SignUpResult checkUserNameNotExist(@RequestBody User user){
+        ResultCode code=userDao.checkUsernameExist(user);
+        return new SignUpResult(code!=ResultCode.USERNAME_EXIST?true:false);
     }
+    @RequestMapping(value = "/checkUserPhone",method = RequestMethod.POST)
+    public @ResponseBody SignUpResult checkPhoneNotExist(@RequestBody User user){
+        ResultCode code=userDao.checkPhoneExist(user);
+        return new SignUpResult(code==ResultCode.PHONE_EXIST?false:true);
+    }
+    @RequestMapping(value="/checkUserEmail",method = RequestMethod.POST)
+    public @ResponseBody SignUpResult checkEmailNotExist(@RequestBody User user){
+        ResultCode code=userDao.checkEmailExist(user);
+        return new SignUpResult(code==ResultCode.EMAIL_EXIST?false:true);
+    }
+    @RequestMapping(value="/addNewUser",method = RequestMethod.POST)
+    public @ResponseBody AddResult addNewUser(@RequestBody User user){
+        ResultCode code=userDao.addNewUser(user);
+        System.out.println(user);
+        return new AddResult(code);
+    }
+
+
     static class SignUpResult{
         boolean result;
 
@@ -49,5 +69,22 @@ public class SignUpController {
             this.result = result;
         }
     }
+    static class AddResult{
+        ResultCode code;
 
+        public AddResult() {
+        }
+
+        public AddResult(ResultCode code) {
+            this.code = code;
+        }
+
+        public ResultCode getCode() {
+            return code;
+        }
+
+        public void setCode(ResultCode code) {
+            this.code = code;
+        }
+    }
 }

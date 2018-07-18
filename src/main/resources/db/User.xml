@@ -1,0 +1,52 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="vote.domain.User">
+    <select id="selectPrivateUserById" resultType="vote.domain.PrivateUser">
+        select * from user where user_id = #{userId}
+    </select>
+    <select id="selectAllUser" resultMap="getUserInfo">
+        select * from user
+    </select>
+    <select id="checkUserValid" resultMap="getUserInfo">
+        select * from user where account = #{account} and password = #{password}
+    </select>
+    <select id="checkUserExist" resultType="vote.domain.User">
+        select * from user where account = #{account}
+    </select>
+    <select id="checkPrivateUserExist" resultType="vote.domain.PrivateUser">
+        select * from user where account = #{account}
+    </select>
+    <resultMap id="getUserInfo" type="vote.domain.PrivateUser">
+        <id property="userId" column="user_id"></id>
+    </resultMap>
+    <select id="checkUsernameExist" resultMap="userMap">
+        select * from user_info where user_name = #{username}
+    </select>
+    <select id="checkUserPhoneExist" resultMap="userMap">
+        select * from user_info where user_phone = #{phone}
+    </select>
+    <select id="checkUserEmailExist" resultMap="userMap">
+        select * from user_info where user_email = #{email}
+    </select>
+    <insert id="addNewUserPrivate" parameterType="vote.domain.User">
+        insert into user(account,password,user_type_id) values(#{account},#{password},#{type})
+    </insert>
+    <select id="getUserIdByAccount" resultType="vote.domain.PrivateUser">
+        select user_id as userId from user where account = #{account}
+    </select>
+    <insert id="addNewUserInfo" parameterType="vote.domain.User">
+        insert into user_info(user_id,user_name,user_sex,user_phone,user_email,create_time,birth)
+        values(#{userId},#{username},#{sex},#{phone},#{email},now(),#{birth})
+    </insert>
+    <resultMap id="userMap" type="vote.domain.User">
+        <id property="userId" column="user_id"/>
+        <result property="username" column="user_name"/>
+        <result property="sex" column="user_sex"/>
+        <result property="phone" column="user_phone"/>
+        <result property="email" column="user_email"/>
+        <result property="whatsUp" column="user_whatsup"/>
+        <result property="createTime" column="create_time"/>
+    </resultMap>
+</mapper>
