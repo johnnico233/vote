@@ -12,12 +12,30 @@
 <body>
     <p id="web-local" th:text="${local}" style="display: none;"></p>
     <div class="main-container">
-        <p>账号:<input id="account" type="text" class="form-control"></p>
-        <p>密码:<input id="password" type="password" class="form-control"></p>
-        <p>密码确认:<input id="re-password" type="password" class="form-control"></p>
-        <p>昵称<input id="username" type="text" class="form-control"></p>
-
+        <h1>注册</h1>
+        <p>账号: <input id="account" type="text" class="form-control" placeholder="账号长度为6~16位">
+            <span>账号已经被注册</span></p>
+        <p>密码: <input id="password" type="password" class="form-control"
+                      placeholder="密码为8~16位,建议数字,小写字母,大写字母和特殊字符组成密码">
+            <span>密码长度过短</span></p>
+        <p>密码确认:<input id="re-password" type="password" class="form-control" placeholder="密码必须一致"
+        ><span>密码不一致</span></p>
+        <p>昵称: <input id="username" type="text" class="form-control" placeholder="昵称长度为4~16位">
+            <span>昵称已经存在</span></p>
+        <p>生日: <select id="year" class="form-control"></select>年
+            <select id="month" class="form-control"></select>月
+            <select id="day" class="form-control"></select>日
+        </p>
+        <p>电话: <input id="phone" type="text" class="form-control"><span>电话号码已经被注册</span></p>
+        <p>Email: <input id="email" type="text" class="form-control"><span>邮箱已经存在</span></p>
+        <p class="sex-selector">
+            性别:
+            <input type="radio" name="sex" value="female" checked>男
+            <input type="radio" name="sex" value="male">女
+        </p>
+        <button class="btn btn-primary sign-up-btn">注册</button>
     </div>
     <script th:src="'/'+${local}+'/js/core/jquery-3.2.1.js'"></script>
+    <script th:src="'/'+${local}+'/js/signUp.js'"></script>
 </body>
 </html>

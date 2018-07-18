@@ -1,11 +1,95 @@
+body{
+    background: #dee1e4;
+}
+
 .main-container{
     width:800px;
     margin: 20px auto;
-    border:1px solid #000;
+    background: #fff;
+}
+
+.main-container h1{
+    background-color: #018382;
+    color: #fff;
+    padding: 5px 0px 10px 40px;
 }
 
 .main-container input{
     width:60%;
-    margin:10px 5%;
+    margin:10px 10% 10px 3%;
     display: inline-block;
 }
+
+#account{
+    margin-right: 2%;
+}
+
+#password{
+    margin-right: 4%;
+}
+
+#re-password{
+    margin-right: 7%;
+}
+
+#username{
+    margin-right: 4%;
+}
+
+#email{
+    margin-right: 5%;
+}
+
+#phone{
+    margin-right: 2%;
+}
+
+
+
+.main-container p{
+    text-align: right;
+}
+
+.main-container p:nth-of-type(5){
+    margin-right: 24%;
+}
+
+.main-container p:nth-of-type(6) >span{
+    margin-right: 5%;
+}
+
+
+.main-container select{
+    display: inline;
+    width: 17%;
+    margin:10px 4%;
+}
+
+p.sex-selector{
+    margin-right: 50%;
+}
+.main-container input[type=radio]{
+    width:5%;
+    margin:2%;
+}
+.main-container input[type=radio]:first-of-type{
+    width:5%;
+    margin-left: 51%;
+}
+
+.sign-up-btn{
+    width: 45%;
+    border-radius: 0.2em;
+    line-height: 40px;
+    margin: 10px 0% 30px 23%;
+    font-size: 18px;
+}
+
+.main-container span{
+    margin: 0 8% 0 0;
+    width: 30px;
+    line-height: 20px;
+    color: red;
+    visibility:hidden;
+}
+

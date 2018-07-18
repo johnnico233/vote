@@ -4,14 +4,16 @@ public class PrivateUser {
     protected String account;
     protected int userId=-1;
     protected String password;
+    protected int type;
 
     public PrivateUser() {
     }
 
-    public PrivateUser(String account, int userId, String password) {
+    public PrivateUser(String account, int userId, String password, int type) {
         this.account = account;
         this.userId = userId;
         this.password = password;
+        this.type = type;
     }
 
     public String getAccount() {
@@ -38,12 +40,21 @@ public class PrivateUser {
         this.password = password;
     }
 
+    public int getType() {
+        return type;
+    }
+
+    public void setType(int type) {
+        this.type = type;
+    }
+
     @Override
     public String toString() {
         return "PrivateUser{" +
                 "account='" + account + '\'' +
                 ", userId=" + userId +
                 ", password='" + password + '\'' +
+                ", type=" + type +
                 '}';
     }
 }
