@@ -22,26 +22,9 @@ div.main-container p{
     margin-left: 10px;
 }
 
-.main-container input,.main-container textarea{
-    width:80%;
-    margin-left: 7%;
-    display: inline-block;
-}
-.main-container input[type=radio]{
-    width:5%;
-    margin-left: 0%;
-}
+
 .main-container p#max_count{
     display: none;
-}
-.main-container input[name='multi_max_count']{
-    margin-left: 2%;
-}
-.main-container input[name='title']{
-    margin-left: 8%;
-}
-.main-container textarea{
-    margin-left: 6%;
 }
 
 div.option-block{
@@ -55,6 +38,7 @@ div.option-block{
 
 .main-container button:first-of-type{
     margin-right: 20px;
+    margin-left: 1%;
 }
 
 #send-vote{
@@ -62,4 +46,23 @@ div.option-block{
     margin: 0 25%;
     height: 60px;
     font-size: 20px;
+}
+span{
+    width:100px;
+    display: inline-block;
+}
+
+.main-container input,.main-container textarea{
+    width:80%;
+    display: inline-block;
+}
+.main-container textarea{
+    margin-left: -0.5%;
+}
+.main-container input[type='date'],.main-container input[type='number']{
+    margin-left: 0.5%;
+}
+
+.main-container input[type='radio']{
+    width:5%;
 }

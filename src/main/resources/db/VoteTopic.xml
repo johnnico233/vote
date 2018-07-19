@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="vote.domain.UploadVoteTopic">
+
+    <select id="addNewVoteTopic" parameterMap="addNewVoteTopicMap" statementType="CALLABLE">
+        call addNewTopic(?,?,?,?,?,?,?);
+    </select>
+    <parameterMap id="addNewVoteTopicMap" type="java.util.Map">
+        <parameter property="topic" javaType="java.lang.String" mode="IN"/>
+        <parameter property="content" javaType="java.lang.String" mode="IN"/>
+        <parameter property="startTime" javaType="java.util.Date" mode="IN"/>
+        <parameter property="endTime" javaType="java.util.Date" mode="IN"/>
+        <parameter property="isMulti" javaType="java.lang.Boolean" mode="IN"/>
+        <parameter property="userId" javaType="java.lang.Integer" mode="IN"/>
+        <parameter property="id" javaType="java.lang.Integer" jdbcType="INTEGER" mode="OUT"/>
+    </parameterMap>
+
+    <insert id="addTopicOptions" parameterType="vote.domain.TopicOption">
+        insert into vote_item(vote_id,option_name,count) values(#{topicId},#{name},#{count});
+    </insert>
+</mapper>

@@ -206,7 +206,6 @@ function sendSth2Server(url,data,errorHint,successWord,errorWord){
         data:JSON.stringify(data),
         headers:{'Content-type':'application/json;charset=utf-8'}
     }).done(function(json){
-        console.log(json);
         errorHint.css("visibility","visible")
         if(json.result==false){
             errorHint.html(errorWord);
