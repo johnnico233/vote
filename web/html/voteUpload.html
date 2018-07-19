@@ -10,9 +10,7 @@
 <body>
     <div class="main-container">
         <h1>发起投票</h1>
-        <p><span>标题: </span><input type="text" class="form-control" placeholder="投票标题,不多于32字" name="title">
-
-        </p>
+        <p><span>标题: </span><input type="text" class="form-control" placeholder="投票标题,不多于32字" name="title"></p>
         <p><span>描述：</span>
             <textarea class="form-control" placeholder="投票描述(内容不多于250字)" rows="3" name="content"></textarea>
         </p>
@@ -30,6 +28,8 @@
         <p><button class="btn btn-success" id="send-vote">发起投票</button></p>
     </div>
     <script th:src="'/'+${local}+'/js/core/jquery-3.2.1.js'"></script>
+    <script th:src="'/'+${local}+'/js/core/popper.min.js'"></script>
+    <script th:src="'/'+${local}+'/js/core/bootstrap.js'"></script>
     <script th:src="'/'+${local}+'/js/voteUpload.js'"></script>
 </body>
 </html>
