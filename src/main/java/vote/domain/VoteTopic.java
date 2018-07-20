@@ -32,6 +32,16 @@ public class VoteTopic {
         this.usable = usable;
     }
 
+    public VoteTopic(VoteTopic voteTopic){
+        id=voteTopic.id;
+        userId=voteTopic.userId;
+        topic=voteTopic.topic;
+        content=voteTopic.content;
+        startTime=voteTopic.startTime;
+        endTime=voteTopic.endTime;
+        isMulti=voteTopic.isMulti;
+        usable=voteTopic.usable;
+    }
     public VoteTopic() {
     }
 

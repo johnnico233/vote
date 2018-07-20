@@ -198,13 +198,13 @@ function send(){
     $.each($("input[name='vote_option']"),function(idx,item){
         options.push($(item).val());
     });
-    var data={"topic":$("input[name='title']").val(),"content":$("textarea[name='content']").val(),
+    var data={"topic":$.trim($("input[name='title']").val()),"content":$.trim($("textarea[name='content']").val()),
               "isMulti":$("input[name='vote_type']:checked").val()=="multi","max_count":$("input[type='number']").val(),
               "options":options,"startTime":$("input[name='start-time']").val(),"endTime":$("input[name='end-time']").val(),
               "userId":1};
     console.log(data);
     $.ajax({
-        url:"/"+$("#web-local").html()+"/voteUpload//addNewTopic",
+        url:"/"+$("#web-local").html()+"/voteUpload/addNewTopic",
         type:"post",
         dataType:"json",
         data:JSON.stringify(data),

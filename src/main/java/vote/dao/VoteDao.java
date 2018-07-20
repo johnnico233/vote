@@ -6,8 +6,10 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 import vote.domain.TopicOption;
 import vote.domain.UploadVoteTopic;
+import vote.domain.VoteTopic;
 
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 @Repository
@@ -30,6 +32,26 @@ public class VoteDao {
                 insertCount+=session.insert("addTopicOptions",new TopicOption(option,id));
             session.commit();
             return insertCount==uploadVoteTopic.getOptions().length?id:-1;
+        }finally {
+            session.close();
+        }
+    }
+    public List<TopicOption> getTopicOptions(int id){
+        SqlSession session=factory.openSession();
+        try{
+            List<TopicOption> list=session.selectList("getVoteOptions",id);
+            return list;
+        }finally {
+            session.close();
+        }
+    }
+    public VoteTopic getVoteTopic(int id){
+        SqlSession session=factory.openSession();
+        try{
+
+            //wait to modify
+
+            return null;
         }finally {
             session.close();
         }

@@ -20,4 +20,13 @@
     <insert id="addTopicOptions" parameterType="vote.domain.TopicOption">
         insert into vote_item(vote_id,option_name,count) values(#{topicId},#{name},#{count});
     </insert>
+
+    <select id="getVoteOptions" resultMap="voteOptionMap">
+        select * from vote_item where vote_id = #{id}
+    </select>
+    <resultMap id="voteOptionMap" type="vote.domain.TopicOption">
+        <id property="id" column="item_id"/>
+        <result property="topicId" column="vote_id"/>
+        <result property="name" column="option_name"/>
+    </resultMap>
 </mapper>

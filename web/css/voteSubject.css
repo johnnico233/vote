@@ -1,4 +1,83 @@
-div.main-container{
-    width:800px;
-    margin:20px auto;
+table{
+    width:1200px;
+    margin:50px auto;
+    background-color: #f3f3f3;
+    border-right: 1px solid #ccc;
+}
+tr{
+    border-bottom: 1px solid #ccc;
+}
+
+td.left-block,td.right-block{
+    display: inline-block;
+}
+
+td.left-block{
+    width:25%;
+    vertical-align: top;
+}
+
+td.right-block{
+    width:75%;
+    min-height: 400px;
+    vertical-align: top;
+    background-color: rgba(255, 255, 255, 0.77);
+}
+
+td.left-block img{
+    width:200px;
+    height:200px;
+    margin:10px auto;
+    display: block;
+}
+td.left-block p{
+    text-align: center;
+    margin:10px;
+    color: #0554b7;
+}
+td.left-block p:nth-of-type(n+2){
+    text-align:left;
+    margin:10px 50px;
+}
+
+td.right-block p{
+    margin:10px
+}
+td.right-block h1{
+    color: #fff;
+    background: #016c9f;
+    padding: 5px 15px;
+    margin-right: -1px;
+}
+
+td.right-block div.vote-progress {
+    display: inline-block;
+    width: 50%;
+    margin-left: 10px;
+}
+
+input[name='vote_option']{
+    margin:0px 10px;
+}
+
+td.right-block button{
+    width: 20%;
+    line-height: 30px;
+    font-size: 18px;
+    margin:  20px;
+}
+td.right-block span.vote-line{
+    display: inline-block;
+    width:34%;
+    margin-left: 10px;
+}
+span.vote-count{
+    margin-left: 1.5%;
+}
+span.vote-time{
+    font-size: x-large;
+    margin:0px 10px;
+}
+td.right-block p{
+    margin:10px 20px;
 }
