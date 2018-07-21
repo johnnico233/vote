@@ -2,13 +2,13 @@ body{
     background-color: #e4e3e3;
 }
 table{
-    width:1200px;
+    width:1000px;
     margin:50px auto 0px auto;
     background-color:#378194;
     border-right: 1px solid #ccc;
 }
 tr{
-    border-bottom: 0.0008em  solid #ccc;
+    border-bottom: 1px  solid #000;
 }
 
 td.left-block,td.right-block{
@@ -93,7 +93,7 @@ td.right-block p,td.right-block h6{
     margin:10px 20px;
 }
 div.message-block{
-    width: 1200px;
+    width: 1000px;
     margin: 0px auto 10px auto;
     border: 1px solid #ccc;
     border-top: none;
@@ -155,7 +155,7 @@ div.skip-block button:nth-of-type(2){
     width:16%;
 }
 .right-block p.message-info{
-    border-bottom: 1px solid #ccc;
+    border-bottom: 1px solid #000;
     margin: 0px;
     padding: 10px 20px;
 }
