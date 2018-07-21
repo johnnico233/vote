@@ -40,6 +40,10 @@
         insert into user_info(user_id,user_name,user_sex,user_phone,user_email,create_time,birth)
         values(#{userId},#{username},#{sex},#{phone},#{email},now(),#{birth})
     </insert>
+    <select id="getUserPublicInfoById" resultMap="userMap">
+        select * from user_info where user_id = #{id}
+    </select>
+    
     <resultMap id="userMap" type="vote.domain.User">
         <id property="userId" column="user_id"/>
         <result property="username" column="user_name"/>
@@ -48,5 +52,7 @@
         <result property="email" column="user_email"/>
         <result property="whatsUp" column="user_whatsup"/>
         <result property="createTime" column="create_time"/>
+        <result property="type" column="user_type_id"/>
+        <result property="lastLogin" column="last_login_time"/>
     </resultMap>
 </mapper>

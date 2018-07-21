@@ -18,11 +18,14 @@ public class User extends PrivateUser{
     @JsonSerialize(using= JsonDateSerializer.class)
     @JsonDeserialize(using= JsonDecDateSerializer.class)
     private Date birth;
+    @JsonSerialize(using= JsonDateSerializer.class)
+    @JsonDeserialize(using= JsonDecDateSerializer.class)
+    private Date lastLogin;
 
     public User() {
     }
 
-    public User(String account, int userId, String password, int type, String username, String sex, String phone, String email, String whatsUp, Date createTime, Date birth) {
+    public User(String account, int userId, String password, int type, String username, String sex, String phone, String email, String whatsUp, Date createTime, Date birth, Date lastLogin) {
         super(account, userId, password, type);
         this.username = username;
         this.sex = sex;
@@ -31,6 +34,7 @@ public class User extends PrivateUser{
         this.whatsUp = whatsUp;
         this.createTime = createTime;
         this.birth = birth;
+        this.lastLogin = lastLogin;
     }
 
     public String getUsername() {
@@ -89,6 +93,14 @@ public class User extends PrivateUser{
         this.birth = birth;
     }
 
+    public Date getLastLogin() {
+        return lastLogin;
+    }
+
+    public void setLastLogin(Date lastLogin) {
+        this.lastLogin = lastLogin;
+    }
+
     @Override
     public String toString() {
         return "User{" +
@@ -99,6 +111,7 @@ public class User extends PrivateUser{
                 ", whatsUp='" + whatsUp + '\'' +
                 ", createTime=" + createTime +
                 ", birth=" + birth +
+                ", lastLogin=" + lastLogin +
                 ", account='" + account + '\'' +
                 ", userId=" + userId +
                 ", password='" + password + '\'' +

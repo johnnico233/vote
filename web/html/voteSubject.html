@@ -8,52 +8,79 @@
     <link th:href="'/'+${local}+'/css/voteSubject.css'" rel="stylesheet">
 </head>
 <body>
+    <p th:text="${local}" id="web-local" style="display:none;"></p>
+    <p th:text="${vote.id}" id="topicId" style="display:none;"></p>
     <table>
         <tr>
             <td class="left-block">
                 <img>
-                <p>userName</p>
-                <p>测试测试测试测试测试测试测试测试测试测试测试测试测试测试测试测试</p>
-                <p>上一次登陆:2018-07-25</p>
+                <p th:text="${userInfo.username}"></p>
+                <p th:text="${userInfo.whatsUp}"></p>
+                <p>上次登录时间:</p>
+                <p th:text="${lastLogin}"></p>
             </td>
             <td class="right-block">
-                <h1>this is the title for test</h1>
-                <p>测试文字测试文字测试文字测试文字测试文字测试文字测试文字测试文字测试文字测试文字测试文字测试文字测试文字测试文字测试文字测试文字测试文字测试文字测试文字测试文字测试文字测试文字测试文字测试文字测试文字测试文字测试文字测试文字测试文字测试文字测试文字测试文字
-                    测试文字测试文字测试文字测试文字测试文字测试文字测试文字测试文字测试文字测试文字测试文字测试文字测试文字测试文字测试文字测试文字测试文字测试文字测试文字测试文字测试文字测试文字测试文字测试文字测试文字测试文字测试文字测试文字测试文字测试文字测试文字测试文字
-                </p>
-                <p style="vertical-align: center">投票时间：<span class="vote-time">2018-09-10</span>到<span class="vote-time">2018-10-10</span></p>
-                <div>
-                    <span class="vote-line"><input type="radio" name="vote_option">投票选项投票选项投票选项投票选项</span>
+                <h1 th:text="${vote.topic}"></h1>
+                <h5><span class="vote_type">* </span>
+                    目前投票类型为<span th:text="${vote.isMulti}?'多选':'单选'" class="vote_type"></span></h5>
+                <h6 th:text="${vote.content}" style="min-height: 300px;"></h6>
+                <p style="vertical-align: center">投票时间：<span class="vote-time" th:text="${startTime}"></span>到
+                    <span class="vote-time" th:text="${endTime}"></span></p>
+                <div th:each="option,stats:${vote.topicOptionList}">
+                    <input th:type="(!${vote.isMulti})?'radio':'checkbox'" name="vote_option" th:value="${option.id}">
+                    <span class="vote-line" th:text="${option.name}"></span>
                     <div class="vote-progress">
                         <div class="progress">
-                            <div class="progress-bar" role="progressbar" style="width: 70%" aria-valuenow="25" aria-valuemin="0" aria-valuemax="100"></div>
+                            <div th:class="'progress-bar '+((${stats.index}%3==0)?'bg-success':((${stats.index}%3==1)?'bg-info':'bg-warning'))"
+                                 role="progressbar" th:style="'width:'+((${vote.maxCount}==0)?'0':100*(${option.count}/${vote.maxCount}))+'%'"
+                                 aria-valuenow="25" aria-valuemin="0" aria-valuemax="100"></div>
                         </div>
                     </div>
-                    <span class="vote-count">200票</span>
+                    <span class="vote-count" th:text="${option.count}+'票'"></span>
                 </div>
-                <div>
-                    <span class="vote-line"><input type="radio" name="vote_option">投票选项投票3</span>
-                    <div class="vote-progress">
-                        <div class="progress">
-                            <div class="progress-bar bg-success" role="progressbar" style="width: 40%" aria-valuenow="25" aria-valuemin="0" aria-valuemax="100"></div>
-                        </div>
-                    </div>
-                    <span class="vote-count">200票</span>
-                </div>
-                <div>
-                    <span class="vote-line"><input type="radio" name="vote_option">投票选项投票选2票选项</span>
-                    <div class="vote-progress">
-                        <div class="progress">
-                            <div class="progress-bar bg-warning" role="progressbar" style="width: 55%" aria-valuenow="25" aria-valuemin="0" aria-valuemax="100"></div>
-                        </div>
-                    </div>
-                    <span class="vote-count">200票</span>
-                </div>
+                <p th:if="${vote.isMulti}">目前最多只能投的票数为:
+                    <span class="margin-left: 10px;" th:text="${vote.totalVoteCount}" id="vote_max_count"></span></p>
                 <button class="btn btn-primary" disabled id="confirm-vote">确认投票</button>
             </td>
         </tr>
+        <tr th:each="voteMessage ,stats: ${voteMessages}">
+            <td class="left-block" th:if="${voteMessage.available}">
+                <img>
+                <p th:text="${voteMessage.userName}">用户名</p>
+                <p th:text="${voteMessage.whatsUp}">whatsUp</p>
+                <p>上次登录时间:</p>
+                <p th:text="${voteMessage.stringLastLogin}">Last login time</p>
+            </td>
+            <td class="right-block" th:if="${voteMessage.available}">
+                <p class="message-info"><span th:text="'#'+(${stats.index}+1+(${index}-1)*${step})"></span>
+                    <span th:text="${voteMessage.stringSendTime}"></span></p>
+                <p style="min-height: 450px;" th:text="${voteMessage.content}"></p>
+            </td>
+        </tr>
     </table>
+    <div class="message-block" style="margin-bottom: 0px;background: #fff">
+        <div class="skip-block">
+            <button class="btn btn-primary" id="preBtn">上一页</button>
+            <span id="preIndex" th:text="${index}">1</span>/
+            <span id="nextIndex">2</span><input class="form-control" type="number" id="index">
+            <button class="btn btn-success">跳转</button>
+            <button class="btn btn-primary" id="nextBtn">下一页</button>
+        </div>
+    </div>
+    <div class="message-block">
+        <div class="send-message">
+            <h3>发表回复</h3>
+            <textarea class="form-control" rows="10"></textarea>
+            <span>enter + ctrl发送</span>
+            <button class="btn btn-success" id="send-message-btn" disabled>发送</button>
+        </div>
+    </div>
+    <span style="display:none" th:text="${messageCount}" id="messageCount"></span>
+    <span style="display:none" th:text="${index}" id="idx"></span>
+    <span style="display:none" th:text="${step}" id="step"></span>
     <script th:src="'/'+${local}+'/js/core/jquery-3.2.1.js'"></script>
+    <script th:src="'/'+${local}+'/js/core/popper.min.js'"></script>
+    <script th:src="'/'+${local}+'/js/core/bootstrap.js'"></script>
     <script th:src="'/'+${local}+'/js/voteSubject.js'"></script>
 </body>
 </html>

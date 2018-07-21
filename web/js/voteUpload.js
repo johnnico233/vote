@@ -199,7 +199,7 @@ function send(){
         options.push($(item).val());
     });
     var data={"topic":$.trim($("input[name='title']").val()),"content":$.trim($("textarea[name='content']").val()),
-              "isMulti":$("input[name='vote_type']:checked").val()=="multi","max_count":$("input[type='number']").val(),
+              "isMulti":$("input[name='vote_type']:checked").val()=="multi","totalVoteCount":$("input[type='number']").val(),
               "options":options,"startTime":$("input[name='start-time']").val(),"endTime":$("input[name='end-time']").val(),
               "userId":1};
     console.log(data);
@@ -210,9 +210,10 @@ function send(){
         data:JSON.stringify(data),
         headers:{'Content-type':'application/json;charset=utf-8'}
     }).done(function(json){
-        if(json.code=='SUCCESS')
-            alert("发起投票成功，即将进入到对应的投票页面,投票id为： "+json.id);
-        else
+        if(json.code=='SUCCESS') {
+            alert("发起投票成功，即将进入到对应的投票页面");
+            window.location.href="/"+$("#web-local").html()+"/voteSubject/"+json.id;
+        } else
             alert("出现了错误！请联系系统管理员")
     }).fail(function(xhr,status,errorThrown){
         alert("there is something wrong with server");

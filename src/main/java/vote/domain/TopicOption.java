@@ -16,6 +16,11 @@ public class TopicOption {
         this.topicId = topicId;
     }
 
+    public TopicOption(int id, int topicId) {
+        this.id = id;
+        this.topicId = topicId;
+    }
+
     public TopicOption(String name, int topicId) {
         this.name = name;
         this.topicId = topicId;

@@ -12,6 +12,7 @@ public class UploadVoteTopic extends VoteTopic{
 
     private String[] options;
 
+
     public UploadVoteTopic() {
     }
 
@@ -28,10 +29,12 @@ public class UploadVoteTopic extends VoteTopic{
         this.options = options;
     }
 
+
     @Override
     public String toString() {
         return "UploadVoteTopic{" +
                 "options=" + Arrays.toString(options) +
+                ", totalVoteCount=" + totalVoteCount +
                 ", id=" + id +
                 ", userId=" + userId +
                 ", topic='" + topic + '\'' +

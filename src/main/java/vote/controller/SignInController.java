@@ -24,7 +24,7 @@ public class SignInController {
 
     @RequestMapping(value="/signIn",method = RequestMethod.POST)
     public @ResponseBody Result check(@RequestBody PrivateUser user){
-        ResultCode code=userDao.getPrivateUser(user);
+        ResultCode code=userDao.CheckUserAccountAndPassword(user);
         if(code!=ResultCode.SUCCESS)
             return new Result(code,(code==ResultCode.ACCOUNT_NOT_EXIST?"账号不存在":"密码错误"));
         else

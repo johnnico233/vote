@@ -1,11 +1,14 @@
+body{
+    background-color: #e4e3e3;
+}
 table{
     width:1200px;
-    margin:50px auto;
-    background-color: #f3f3f3;
+    margin:50px auto 0px auto;
+    background-color:#378194;
     border-right: 1px solid #ccc;
 }
 tr{
-    border-bottom: 1px solid #ccc;
+    border-bottom: 0.0008em  solid #ccc;
 }
 
 td.left-block,td.right-block{
@@ -27,17 +30,18 @@ td.right-block{
 td.left-block img{
     width:200px;
     height:200px;
-    margin:10px auto;
+    margin:30px auto;
     display: block;
 }
 td.left-block p{
     text-align: center;
     margin:10px;
-    color: #0554b7;
+    color: #fff;
 }
 td.left-block p:nth-of-type(n+2){
     text-align:left;
-    margin:10px 50px;
+    margin:30px 50px 10px 50px;
+    WORD-BREAK: break-all;
 }
 
 td.right-block p{
@@ -47,17 +51,25 @@ td.right-block h1{
     color: #fff;
     background: #016c9f;
     padding: 5px 15px;
-    margin-right: -1px;
+    margin:0px -2px;
+}
+td.right-block h5{
+    margin: 20px 0px 0px 20px;
+    font-weight: bold;
+}
+td.right-block .vote_type{
+    color: #ef0404;
+    margin-left: 10px;
 }
 
 td.right-block div.vote-progress {
     display: inline-block;
-    width: 50%;
+    width: 48%;
     margin-left: 10px;
 }
 
 input[name='vote_option']{
-    margin:0px 10px;
+    margin:0px 20px;
 }
 
 td.right-block button{
@@ -68,8 +80,7 @@ td.right-block button{
 }
 td.right-block span.vote-line{
     display: inline-block;
-    width:34%;
-    margin-left: 10px;
+    width:30%;
 }
 span.vote-count{
     margin-left: 1.5%;
@@ -78,6 +89,86 @@ span.vote-time{
     font-size: x-large;
     margin:0px 10px;
 }
-td.right-block p{
+td.right-block p,td.right-block h6{
     margin:10px 20px;
+}
+div.message-block{
+    width: 1200px;
+    margin: 0px auto 10px auto;
+    border: 1px solid #ccc;
+    border-top: none;
+    background-color: #eaeaea;
+    background-color:#2c7284;
+}
+div.message-block:last-of-type{
+    border-bottom-left-radius: 0.25em;
+    border-bottom-right-radius: 0.25em;
+}
+div.send-message{
+    width:600px;
+    margin:0px auto 50px auto;
+    min-height: 300px;
+    padding:20px 0;
+}
+
+div.send-message textarea{
+    width:100%;
+}
+div.send-message h3{
+    color:#fff;
+}
+
+div.send-message button{
+    float:right;
+    margin-top: 10px;
+    width: 100px;
+}
+
+div.skip-block{
+    width: 600px;
+    margin: 0px auto;
+    padding: 10px 20px;
+}
+div.skip-block input[type='number'],div.skip-block button,div.skip-block span{
+    margin:0px 10px;
+    display: inline-block;
+}
+
+input::-webkit-outer-spin-button,
+input::-webkit-inner-spin-button {
+    -webkit-appearance: none;
+}
+input[type="number"]{
+    -moz-appearance: textfield;
+}
+div.skip-block input[type='number']{
+    width: 15%;
+    -webkit-appearance: none;
+}
+div.skip-block button{
+    margin-top: -5px;
+}
+div.skip-block button:first-of-type{
+    margin-left: 8%;
+}
+div.skip-block button:nth-of-type(2){
+    width:16%;
+}
+.right-block p.message-info{
+    border-bottom: 1px solid #ccc;
+    margin: 0px;
+    padding: 10px 20px;
+}
+
+.message-info span{
+    display: inline-block;
+}
+.message-info span:last-of-type{
+    float:right;
+}
+.send-message >span{
+    color: #fff;
+    padding: 20px 10px 0px 10px;
+    margin-top: 0px;
+    display: inline-block;
 }

@@ -1,0 +1,89 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="vote.domain.UploadVoteTopic">
+
+    <select id="addNewVoteTopic" parameterMap="addNewVoteTopicMap" statementType="CALLABLE">
+        call addNewTopic(?,?,?,?,?,?,?,?);
+    </select>
+    <parameterMap id="addNewVoteTopicMap" type="java.util.Map">
+        <parameter property="topic" javaType="java.lang.String" mode="IN"/>
+        <parameter property="content" javaType="java.lang.String" mode="IN"/>
+        <parameter property="startTime" javaType="java.util.Date" mode="IN"/>
+        <parameter property="endTime" javaType="java.util.Date" mode="IN"/>
+        <parameter property="isMulti" javaType="java.lang.Boolean" mode="IN"/>
+        <parameter property="userId" javaType="java.lang.Integer" mode="IN"/>
+        <parameter property="totalVoteCount" javaType="java.lang.Integer" mode="IN"/>
+        <parameter property="id" javaType="java.lang.Integer" jdbcType="INTEGER" mode="OUT"/>
+    </parameterMap>
+
+    <insert id="addTopicOptions" parameterType="vote.domain.TopicOption">
+        insert into vote_item(vote_id,option_name,count) values(#{topicId},#{name},#{count});
+    </insert>
+
+    <select id="getVoteOptions" resultMap="voteOptionMap">
+        select * from vote_item where vote_id = #{id};
+    </select>
+    <resultMap id="voteOptionMap" type="vote.domain.TopicOption">
+        <id property="id" column="item_id"/>
+        <result property="topicId" column="vote_id"/>
+        <result property="name" column="option_name"/>
+    </resultMap>
+    <select id="getVoteTopic" resultMap="voteTopicMap">
+        select * from vote_topic where vote_id = #{id};
+    </select>
+    <resultMap id="voteTopicMap" type="vote.domain.VoteTopic">
+        <id property="id" column="vote_id"/>
+        <result property="userId" column="user_id"/>
+        <result property="topic" column="vote_topic"/>
+        <result property="content" column="vote_content"/>
+        <result property="startTime" column="start_time"/>
+        <result property="endTime" column="end_time"/>
+        <result property="isMulti" column="is_multi"/>
+        <result property="usable" column="usable"/>
+        <result property="totalVoteCount" column="total_vote_count"/>
+    </resultMap>
+    
+    <resultMap id="voteMessageMap" type="vote.domain.VoteMessage">
+        <id property="id" column="message_id"/>
+        <result property="content" column="message_content"/>
+        <result property="voteId" column="vote_id"/>
+        <result property="sendTime" column="send_time"/>
+        <result property="userId" column="user_id"/>
+        <result property="lastLogin" column="last_login_time"/>
+        <result property="whatsUp" column="user_whatsup"/>
+        <result property="userName" column="user_name"/>
+    </resultMap>
+
+    <select id="getVoteMessage" resultMap="voteMessageMap" >
+        SELECT v.*,user_name,user_whatsup ,u.user_id,last_login_time,user_name from user_info u,vote_message v
+        where u.user_id = v.user_id and v.vote_id = #{id} limit #{index} ,#{step};
+    </select>
+
+    <select id="getVoteMessageCount" resultType="java.lang.Integer">
+        select count(*) from vote_message where vote_id = #{id}
+    </select>
+    
+    <parameterMap id="uploadVoteItemMap" type="java.util.Map">
+        <parameter property="userId"/>
+        <parameter property="id"/>
+        <parameter property="topicId"/>
+    </parameterMap>
+
+    <select id="uploadVoteItem" parameterMap="uploadVoteItemMap" statementType="CALLABLE">
+        call uploadVoteItem(?,?,?);
+    </select>
+
+    <insert id="addVoteMessage" parameterMap="addVoteMessageMap" statementType="CALLABLE">
+        call addNewVoteMessage(?,?,?,?);
+    </insert>
+
+    <parameterMap id="addVoteMessageMap" type="java.util.Map">
+        <parameter property="content" mode="IN"/>
+        <parameter property="voteId" mode="IN"/>
+        <parameter property="userId" mode="IN"/>
+        <parameter property="total" javaType="java.lang.Integer" jdbcType="INTEGER" mode="OUT"/>
+    </parameterMap>
+
+</mapper>

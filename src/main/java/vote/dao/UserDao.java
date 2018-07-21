@@ -13,7 +13,7 @@ import vote.result.ResultCode;
 public class UserDao {
     @Autowired
     private SqlSessionFactory factory;
-    public ResultCode getPrivateUser(PrivateUser privateUser){
+    public ResultCode CheckUserAccountAndPassword(PrivateUser privateUser){
         SqlSession session=factory.openSession();
         try{
             PrivateUser user=session.selectOne("checkUserValid",privateUser);
@@ -96,6 +96,15 @@ public class UserDao {
                     return ResultCode.PHONE_EXIST;
             }else
                 return ResultCode.USERNAME_EXIST;
+        }finally {
+            session.close();
+        }
+    }
+    public User getPublicUserInfoById(int id){
+        SqlSession session=factory.openSession();
+        try {
+            User user=session.selectOne("getUserPublicInfoById",id);
+            return user;
         }finally {
             session.close();
         }

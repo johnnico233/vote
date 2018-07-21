@@ -18,6 +18,6 @@
     </environments>
     <mappers>
         <mapper resource="db/User.xml"/>
-        <mapper resource="db/VoteTopic.xml"/>
+        <mapper resource="db/Vote.xml"/>
     </mappers>
 </configuration>

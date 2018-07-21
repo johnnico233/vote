@@ -20,6 +20,7 @@ public class VoteTopic {
     protected Date endTime;
     protected boolean isMulti;
     protected boolean usable;
+    protected int totalVoteCount;
 
     public VoteTopic(int id, int userId, String topic, String content, Date startTime, Date endTime, boolean isMulti, boolean usable) {
         this.id = id;
@@ -41,6 +42,7 @@ public class VoteTopic {
         endTime=voteTopic.endTime;
         isMulti=voteTopic.isMulti;
         usable=voteTopic.usable;
+        totalVoteCount=voteTopic.totalVoteCount;
     }
     public VoteTopic() {
     }
@@ -93,7 +95,7 @@ public class VoteTopic {
         this.endTime = endTime;
     }
 
-    public boolean isMulti() {
+    public boolean getIsMulti() {
         return isMulti;
     }
 
@@ -107,6 +109,14 @@ public class VoteTopic {
 
     public void setUsable(boolean usable) {
         this.usable = usable;
+    }
+
+    public int getTotalVoteCount() {
+        return totalVoteCount;
+    }
+
+    public void setTotalVoteCount(int totalVoteCount) {
+        this.totalVoteCount = totalVoteCount;
     }
 
     @Override
