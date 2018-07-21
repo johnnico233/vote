@@ -1,0 +1,11 @@
+.main-container{
+    width:1200px;
+    margin:20px auto;
+    border:1px solid #000;
+}
+.left-block{
+    height: 800px;
+    border: 1px solid #000;
+    widht: 30%;
+    width: 25%;
+}
