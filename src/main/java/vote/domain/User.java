@@ -21,7 +21,7 @@ public class User extends PrivateUser{
     @JsonSerialize(using= JsonDateSerializer.class)
     @JsonDeserialize(using= JsonDecDateSerializer.class)
     private Date lastLogin;
-    private String avatar;
+    private String avatar = "default.jpg";
 
     public User() {
     }

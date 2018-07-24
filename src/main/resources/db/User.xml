@@ -82,5 +82,8 @@
         select b.*,c.account,a.follow_time  from user_relationship a left join user_info b on a.follow_user_id=b.user_id
         left join user c on a.user_id = c.user_id where a.user_id = #{userId} limit #{start},#{limit};
     </select>
-
+    <update id="updateUserInfo" parameterType="vote.domain.User">
+        update user_info set user_name = #{username},user_sex=#{sex},user_phone=#{phone},user_email = #{email},
+        user_whatsup = #{whatsUp},birth=#{birth},user_avatar = #{avatar} where user_id = #{id};
+    </update>
 </mapper>

@@ -6,7 +6,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import vote.domain.TopicOption;
-import vote.domain.VoteMessage;;import java.util.HashMap;
+import vote.domain.VoteMessage;;import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -17,6 +18,6 @@ public class MbTest {
     private SqlSessionFactory factory;
     @Test
     public void test(){
-        System.out.println(Integer.valueOf(-1/5));
+        System.out.println(new Date().getTime());
     }
 }

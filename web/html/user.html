@@ -9,6 +9,7 @@
     <link th:href="'/'+${local}+'/css/header.css'" rel="stylesheet">
 </head>
 <body>
+    <p id="user_id_recorder" th:text="${userInfo.userId}"></p>
     <p style="display: none" th:text="${local}" id="web-local"></p>
     <div class="modal fade" id="loginModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
         <div class="modal-dialog" role="document">
@@ -65,8 +66,8 @@
                 <th class="left-block">
                     <div class="menu-list" id="user-info-block"><p class="menu-title">用户信息</p>
                         <div>
-                            <a href="#">总览</a>
-                            <a href="#">个人信息</a>
+                            <a th:href="'/'+${local}+'/user/'+${userID}">总览</a>
+                            <a th:href="'/'+${local}+'/user/'+${userID}+'/userInfo'">个人信息</a>
                             <a href="#">关注列表</a>
                             <a href="#">用户管理</a>
                             <a href="#">回收站</a>
@@ -88,9 +89,9 @@
                     </div>
                 </th>
                 <th class="right-block">
-                    <h1>总览</h1>
+                    <h1 th:text="${title}">总览</h1>
                     <!--总览-->
-                    <div th:if="${infoType}" class="overview-block">
+                    <div th:if="${infoType}=='overview'" class="overview-block">
                         <div class="overview-user">
                             <h3>用户信息</h3>
                             <div>
@@ -118,44 +119,52 @@
                         </div>
                     </div>
                     <!--用户信息-->
-                    <div style="display: none" class="user-block">
-                        <div class="overview-user" id="user-info-show" style="display: none">
-                            <h3>用户信息<button class="btn btn-primary">编辑</button></h3>
+                    <div th:if="${infoType}=='userInfo'" class="user-block">
+                        <div class="overview-user" id="user-info-show">
+                            <h3>用户信息<button class="btn btn-primary" id="btn-edit-user-info">编辑</button></h3>
                             <div>
                                 <div>
-                                    <p><span>用户名:</span><span>Yosoro</span></p>
-                                    <p><span>昵称:</span><span>Yosiko</span></p>
-                                    <p><span>上次登录</span><span>2018-08-01</span></p>
+                                    <p><span>用户名:</span><span th:text="${userInfo.account}">Yosoro</span></p>
+                                    <p><span>昵称:</span><span th:text="${userInfo.username}">Yosiko</span></p>
+                                    <p><span>上次登录</span><span th:text="${userInfo.lastLogin}">2018-08-01</span></p>
                                 </div>
-                                <img>
+                                <img th:src="'/'+${local}+'/avatar/'+${userInfo.avatar}">
                             </div>
                             <div>
-                                <p><span>性别:</span><span>女</span></p>
-                                <p><span>邮箱:</span><span>1011206880@qq.com</span></p>
-                                <p><span>电话号码:</span><span>12345678910</span></p>
-                                <p><span>生日:</span><span>2018-09-10</span></p>
+                                <p><span>性别:</span><span th:text="${userInfo.sex}=='female'?'女':'男'">女</span></p>
+                                <p><span>邮箱:</span><span th:text="${userInfo.email}">1011206880@qq.com</span></p>
+                                <p><span>电话号码:</span><span th:text="${userInfo.phone}">12345678910</span></p>
+                                <p><span>生日:</span><span th:text="${userInfo.birth}">2018-09-10</span></p>
                             </div>
                             <p><span>个性签名:</span><span>there is nothing to show for you</span></p>
                         </div>
-                        <div class="overview-user" id="user-info-edit">
-                            <h3>编辑用户信息<button class="btn btn-success">完成</button></h3>
+                        <div style="display: none" class="overview-user" id="user-info-edit">
+                            <h3>编辑用户信息<button class="btn btn-success" id="btn-edit-user-info-fin">完成</button></h3>
                             <div>
                                 <div style="vertical-align: top">
-                                    <p><span>用户名:</span><span>Yosoro</span></p>
-                                    <p><span>昵称:</span><input class="form-control" name="username" type="text"></p>
+                                    <p><span>用户名:</span><span th:text="${userInfo.account}">Yosoro</span></p>
+                                    <p><span>昵称:</span><input class="form-control" name="username"
+                                                              type="text" th:value="${userInfo.username}"></p>
                                 </div>
-                                <div style="display: inline-block;width: 29%;"><img>
-                                    <input type="file" id="send-user-photo">
+                                <div style="display: inline-block;width: 29%;">
+                                    <img th:src="'/'+${local}+'/avatar/'+${userInfo.avatar}">
+                                    <input type="file" id="user-photo-file">
+                                    <button class="btn btn-success" id="send-user-photo">上传图片</button>
+                                    <p style="display: none">上传完成</p>
+                                    <p style="display: none">上传中</p>
+                                    <p style="display: none">图片格式不符</p>
                                 </div>
                             </div>
-                            <p><span style="margin-top: -90px">性别:</span>
-                                <input class="form-control" type="radio" name="sex" value="male"><span style="width: 5%">男</span>
-                                <input class="form-control" type="radio" name="sex" value="female"><span style="width: 5%">女</span>
+                            <p style="margin-top: -150px;"><span>性别:</span>
+                                <input class="form-control" type="radio" name="sex" value="male" th:checked="${userInfo.sex}=='male'">
+                                <span style="width: 5%">男</span>
+                                <input class="form-control" type="radio" name="sex" value="female" th:checked="${userInfo.sex}=='female'">
+                                <span style="width: 5%">女</span>
                             </p>
-                            <p><span>邮箱:</span><input class="form-control" type="email"></p>
-                            <p><span>电话号码:</span><input class="form-control" type="number" name="phone"></p>
-                            <p><span>生日:</span><input class="form-control" type="date" name="birth"></p>
-                            <p><span>个性签名:</span><textarea rows="5" class="form-control" name="whatsUp"></textarea></p>
+                            <p><span>邮箱:</span><input class="form-control" type="email" th:value="${userInfo.email}" name="email"></p>
+                            <p><span>电话号码:</span><input class="form-control" type="number" name="phone" th:value="${userInfo.phone}"></p>
+                            <p><span>生日:</span><input class="form-control" type="date" name="birth" th:value="${userInfo.birth}"></p>
+                            <p><span>个性签名:</span><textarea rows="5" class="form-control" name="whatsUp" th:text="${userInfo.whatsUp}"></textarea></p>
                         </div>
                     </div>
                     <!--关注列表-->

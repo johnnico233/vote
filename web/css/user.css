@@ -209,6 +209,21 @@ div.menu-list a{
 #user-info-edit input[type='radio']{
     width:5%;
 }
+#send-user-photo{
+    display: block;
+    margin: 10px 55px 0 55px;
+}
+#user-info-edit >div >div:nth-of-type(2) >p{
+    padding: 0;
+    font-weight: lighter;
+    color: #016c9f;
+    margin: 0;
+    text-align: center;
+    width: 195px;
+}
+#user-info-edit >div >div:nth-of-type(2) >p:nth-of-type(n+2){
+    color: red;
+}
 
 /*关注用户列表*/
 div.skip-block{

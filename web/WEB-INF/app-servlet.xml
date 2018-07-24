@@ -13,6 +13,11 @@
     <context:component-scan base-package="vote.service"/>
     <aop:aspectj-autoproxy/>
     <bean class="vote.aspect.VoteAspect"/>
+    <bean id="multipartResolver" class="org.springframework.web.multipart.commons.CommonsMultipartResolver">
+        <property name="maxUploadSize" value="4194304"/>
+        <property name="maxUploadSizePerFile" value="4194304"/>
+        <property name="defaultEncoding" value="utf-8"/>
+    </bean>
     <mvc:resources mapping="/css/**" location="/css/"/>
     <mvc:resources mapping="/js/**" location="/js/"/>
     <mvc:resources mapping="/avatar/**" location="/avatar/"/>

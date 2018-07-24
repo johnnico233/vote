@@ -152,4 +152,14 @@ public class UserDao {
             session.close();
         }
     }
+    public int updateUserInfo(User user){
+        SqlSession session=factory.openSession();
+        try{
+            int result=session.update("updateUserInfo",user);
+            session.commit();
+            return result;
+        }finally {
+            session.close();
+        }
+    }
 }

@@ -18,4 +18,7 @@ public class UserService {
     public List<FollowUser> getFollowList(int userId,int start,int limit){
         return userDao.getFollowUserList(userId,start,limit);
     }
+    public int updateUserInfo(User user){
+        return userDao.updateUserInfo(user);
+    }
 }
