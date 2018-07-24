@@ -54,5 +54,33 @@
         <result property="createTime" column="create_time"/>
         <result property="type" column="user_type_id"/>
         <result property="lastLogin" column="last_login_time"/>
+        <result property="avatar" column="user_avatar"/>
     </resultMap>
+
+    <select id="getUserAllInfo" resultMap="userMap">
+        select * from user a,user_info b where a.user_id = b.user_id and a.user_id = #{userId}
+    </select>
+    <resultMap id="followUserInfoMap" type="vote.domain.FollowUser">
+        <id property="userId" column="user_id"/>
+        <result property="username" column="user_name"/>
+        <result property="sex" column="user_sex"/>
+        <result property="phone" column="user_phone"/>
+        <result property="email" column="user_email"/>
+        <result property="whatsUp" column="user_whatsup"/>
+        <result property="createTime" column="create_time"/>
+        <result property="type" column="user_type_id"/>
+        <result property="lastLogin" column="last_login_time"/>
+        <result property="avatar" column="user_avatar"/>
+        <result property="followTime" column="follow_time"/>
+    </resultMap>
+    <parameterMap id="FollowUserListParam" type="java.util.Map">
+        <parameter property="userId"/>
+        <parameter property="start"/>
+        <parameter property="limit"/>
+    </parameterMap>
+    <select id="getFollowUserList" resultMap="followUserInfoMap" parameterMap="FollowUserListParam">
+        select b.*,c.account,a.follow_time  from user_relationship a left join user_info b on a.follow_user_id=b.user_id
+        left join user c on a.user_id = c.user_id where a.user_id = #{userId} limit #{start},#{limit};
+    </select>
+
 </mapper>

@@ -5,23 +5,28 @@ import org.apache.ibatis.session.SqlSessionFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.stereotype.Repository;
+import vote.domain.FollowUser;
 import vote.domain.PrivateUser;
 import vote.domain.User;
 import vote.result.ResultCode;
+
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 @Repository
 public class UserDao {
     @Autowired
     private SqlSessionFactory factory;
-    public ResultCode CheckUserAccountAndPassword(PrivateUser privateUser){
+    public UserWithResult CheckUserAccountAndPassword(PrivateUser privateUser){
         SqlSession session=factory.openSession();
         try{
             PrivateUser user=session.selectOne("checkUserValid",privateUser);
             if(user!=null)
-                return ResultCode.SUCCESS;
+                return new UserWithResult(ResultCode.SUCCESS,user);
             else{
                 ResultCode code=checkUserExist(privateUser,session);
-                return code==ResultCode.ACCOUNT_EXIST?ResultCode.PASSWORD_ERROR:code;
+                return new UserWithResult(code==ResultCode.ACCOUNT_EXIST?ResultCode.PASSWORD_ERROR:code,null);
             }
         }finally {
             session.close();
@@ -105,6 +110,44 @@ public class UserDao {
         try {
             User user=session.selectOne("getUserPublicInfoById",id);
             return user;
+        }finally {
+            session.close();
+        }
+    }
+    public static class UserWithResult{
+        ResultCode resultCode;
+        PrivateUser privateUser;
+
+        public UserWithResult(ResultCode resultCode, PrivateUser privateUser) {
+            this.resultCode = resultCode;
+            this.privateUser = privateUser;
+        }
+
+        public ResultCode getResultCode() {
+            return resultCode;
+        }
+
+        public PrivateUser getPrivateUser() {
+            return privateUser;
+        }
+    }
+    public User getUserAllInfo(int userId){
+        SqlSession sqlSession=factory.openSession();
+        try{
+            User user=sqlSession.selectOne("getUserAllInfo",userId);
+            return user;
+        }finally {
+            sqlSession.close();
+        }
+    }
+    public List<FollowUser> getFollowUserList(int userId,int start,int limit){
+        SqlSession session=factory.openSession();
+        try{
+            Map<String,Integer> map=new HashMap<>();
+            map.put("userId",userId);
+            map.put("start",start);
+            map.put("limit",limit);
+            return session.selectList("getFollowUserList",map);
         }finally {
             session.close();
         }

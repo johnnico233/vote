@@ -12,8 +12,9 @@
     <context:component-scan base-package="vote.dao"/>
     <context:component-scan base-package="vote.service"/>
     <aop:aspectj-autoproxy/>
-    <bean class="vote.aspect.OperationRecorder"/>
+    <bean class="vote.aspect.VoteAspect"/>
     <mvc:resources mapping="/css/**" location="/css/"/>
     <mvc:resources mapping="/js/**" location="/js/"/>
+    <mvc:resources mapping="/avatar/**" location="/avatar/"/>
     <context:property-placeholder location="classpath:env/env.properties" file-encoding="utf-8"/>
 </beans>

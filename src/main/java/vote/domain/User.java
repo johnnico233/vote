@@ -21,6 +21,7 @@ public class User extends PrivateUser{
     @JsonSerialize(using= JsonDateSerializer.class)
     @JsonDeserialize(using= JsonDecDateSerializer.class)
     private Date lastLogin;
+    private String avatar;
 
     public User() {
     }
@@ -101,6 +102,14 @@ public class User extends PrivateUser{
         this.lastLogin = lastLogin;
     }
 
+    public String getAvatar() {
+        return avatar;
+    }
+
+    public void setAvatar(String avatar) {
+        this.avatar = avatar;
+    }
+
     @Override
     public String toString() {
         return "User{" +
@@ -112,6 +121,7 @@ public class User extends PrivateUser{
                 ", createTime=" + createTime +
                 ", birth=" + birth +
                 ", lastLogin=" + lastLogin +
+                ", avatar='" + avatar + '\'' +
                 ", account='" + account + '\'' +
                 ", userId=" + userId +
                 ", password='" + password + '\'' +

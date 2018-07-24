@@ -11,6 +11,7 @@ import vote.result.Result;
 import vote.result.ResultCode;
 import vote.service.VoteService;
 
+import javax.servlet.http.HttpSession;
 import java.util.List;
 
 @Controller
@@ -20,7 +21,7 @@ public class VoteSubjectController {
     private VoteService voteService;
 
     @RequestMapping(value = "/{topicId}",method = RequestMethod.GET)
-    public String getUrl(@PathVariable int topicId, Model model, @RequestParam(required = false) String idx){
+    public String getUrl(HttpSession httpSession, Model model, @PathVariable int topicId, @RequestParam(required = false) String idx){
         VoteTopicWithOption voteTopic=voteService.getVoteInformation(topicId,model);
         if(voteTopic!=null){
             int index=idx==null?1:(isNumber(idx)?Integer.valueOf(idx):1);

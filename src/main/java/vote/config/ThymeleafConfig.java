@@ -1,5 +1,6 @@
 package vote.config;
 
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.thymeleaf.TemplateEngine;
@@ -9,13 +10,14 @@ import org.thymeleaf.spring4.view.ThymeleafViewResolver;
 
 @Configuration
 public class ThymeleafConfig {
-
+    @Value("${project_local}")
+    private String path;
     @Bean
     public ThymeleafViewResolver resolver(TemplateEngine engine){
         ThymeleafViewResolver resolver=new ThymeleafViewResolver();
         resolver.setCharacterEncoding("utf-8");
         resolver.setTemplateEngine(engine);
-        resolver.addStaticVariable("local","vote");
+        resolver.addStaticVariable("local",path);
         return resolver;
     }
 
