@@ -5,9 +5,12 @@ import org.apache.ibatis.session.SqlSessionFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.stereotype.Repository;
+import vote.controller.UserInfoController;
+import vote.domain.DeleteFollowInfo;
 import vote.domain.FollowUser;
 import vote.domain.PrivateUser;
 import vote.domain.User;
+import vote.result.Result;
 import vote.result.ResultCode;
 
 import java.util.HashMap;
@@ -156,6 +159,73 @@ public class UserDao {
         SqlSession session=factory.openSession();
         try{
             int result=session.update("updateUserInfo",user);
+            session.commit();
+            return result;
+        }finally {
+            session.close();
+        }
+    }
+    public User checkUserChangeAvatar(User user){
+        SqlSession session=factory.openSession();
+        try{
+            return session.selectOne("checkUserChangeAvatar",user);
+        }finally {
+            session.close();
+        }
+    }
+    public User selectUsernameExceptMe(User user){
+        SqlSession session=factory.openSession();
+        try{
+            return session.selectOne("checkUsernameExistExceptMe",user);
+        }finally {
+            session.close();
+        }
+    }
+    public User selectPhoneExceptMe(User user){
+        SqlSession session=factory.openSession();
+        try{
+            return session.selectOne("checkPhoneExistExceptMe",user);
+        }finally {
+            session.close();
+        }
+    }
+    public User selectEmailExceptMe(User user){
+        SqlSession session=factory.openSession();
+        try{
+            return session.selectOne("checkEmailExistExceptMe",user);
+        }finally {
+            session.close();
+        }
+    }
+    public ResultCode selectAllInfoException(User user){
+        SqlSession session=factory.openSession();
+        try{
+            if(session.selectOne("checkUsernameExistExceptMe",user)==null){
+                if(session.selectOne("checkPhoneExistExceptMe",user)==null){
+                    if(session.selectOne("checkEmailExistExceptMe",user)==null){
+                        return ResultCode.SUCCESS;
+                    }
+                    return ResultCode.EMAIL_EXIST;
+                }
+                return ResultCode.PHONE_EXIST;
+            }
+            return ResultCode.USERNAME_EXIST;
+        }finally {
+            session.close();
+        }
+    }
+    public int getFollowUserCount(int userId){
+        SqlSession session=factory.openSession();
+        try{
+            return session.selectOne("getFollowUserCount",userId);
+        }finally {
+            session.close();
+        }
+    }
+    public int deleteFollowUser(DeleteFollowInfo followInfo){
+        SqlSession session=factory.openSession();
+        try{
+            int result=session.delete("deleteFollowUser",followInfo);
             session.commit();
             return result;
         }finally {

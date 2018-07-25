@@ -50,7 +50,6 @@ public class SignUpController {
         return new AddResult(code);
     }
 
-
     static class SignUpResult{
         boolean result;
 

@@ -13,7 +13,7 @@ import javax.servlet.http.HttpSession;
 @Aspect
 public class VoteAspect {
     @Before("execution(* vote.controller..*.*(..))")
-    public void Hello(JoinPoint joinPoint){
+    public void checkSession(JoinPoint joinPoint){
         Object[] args=joinPoint.getArgs();
         if(args!=null&&args.length>=2&&args[0] instanceof HttpSession &&args[1] instanceof Model){
             HttpSession httpSession=(HttpSession)args[0];

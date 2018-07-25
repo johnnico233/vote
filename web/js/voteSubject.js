@@ -1,6 +1,7 @@
 $(function(){
     voteOperationEvent();
     initialize();
+    voteUpload();
     uploadMessage();
 })
 function voteOperationEvent(){
@@ -38,7 +39,7 @@ function initialize(){
         if(e.keyCode==13)
             skipEvent(total,topicId);
     })
-    voteUpload();
+
 }
 function skipEvent(total,topicId){
     var idx=$("#index").val();

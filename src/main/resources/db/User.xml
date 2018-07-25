@@ -21,7 +21,7 @@
     <resultMap id="getUserInfo" type="vote.domain.PrivateUser">
         <id property="userId" column="user_id"></id>
     </resultMap>
-    <select id="checkUsernameExist" resultMap="userMap">
+    <select id="checkUsernameExist" resultMap="userMap" parameterType="vote.domain.User">
         select * from user_info where user_name = #{username}
     </select>
     <select id="checkUserPhoneExist" resultMap="userMap">
@@ -84,6 +84,27 @@
     </select>
     <update id="updateUserInfo" parameterType="vote.domain.User">
         update user_info set user_name = #{username},user_sex=#{sex},user_phone=#{phone},user_email = #{email},
-        user_whatsup = #{whatsUp},birth=#{birth},user_avatar = #{avatar} where user_id = #{id};
+        user_whatsup = #{whatsUp},birth=#{birth},user_avatar = #{avatar} where user_id = #{userId};
     </update>
+    <select id="checkUserChangeAvatar" parameterType="vote.domain.User" resultMap="userMap">
+        select * from user_info where user_id = #{userId}
+    </select>
+
+    <select id="checkUsernameExistExceptMe" resultMap="userMap"  parameterType="vote.domain.User">
+        select * from user_info where user_name = #{username} and user_id != #{userId};
+    </select>
+    <select id="checkPhoneExistExceptMe" resultMap="userMap" parameterType="vote.domain.User">
+        select * from user_info where user_phone = #{phone} and user_id != #{userId};
+    </select>
+    <select id="checkEmailExistExceptMe" resultMap="userMap" parameterType="vote.domain.User">
+        select * from user_info where user_email = #{email} and user_id != #{userId};
+    </select>
+
+    <select id="getFollowUserCount" parameterType="java.lang.Integer" resultType="java.lang.Integer">
+        select COUNT(*) from user_relationship where user_id = #{id};
+    </select>
+    <delete id="deleteFollowUser" parameterType="vote.domain.DeleteFollowInfo">
+        delete from user_relationship where user_id = #{userId} and follow_user_id =
+        (select user_id from user_info where user_name = #{followUserName} );
+    </delete>
 </mapper>

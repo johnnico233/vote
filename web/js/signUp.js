@@ -153,15 +153,16 @@ function clickHandler(){
     $("#email").on("blur",function(){
         var email=$("#email").val();
         var hint=$("p:nth-of-type(7) >span");
-        var length=$.trim(email).length;
         hint.css("visibility","visible");
-        if(length>0){
+        var parttern=/^[a-zA-Z0-9_.-]+@[a-zA-Z0-9-]+(\.[a-zA-Z0-9-]+)*\.[a-zA-Z0-9]{2,6}$/;
+        var result=parttern.test(email);
+        if(result){
             $("#email").css("margin-right","5%");
             sendSth2Server("/"+$("#web-local").html()+"/signUp/checkUserEmail",{"email":$.trim(email)},
                 hint, "该邮箱可使用","邮箱已经存在");
         }else{
             hint.css("color","red");
-            hint.html("请输入邮箱");
+            hint.html("请输入合法邮箱");
             $("#email").css("margin-right","7%");
         }
     });

@@ -48,7 +48,7 @@ div.menu-list a{
     width:80%;
     background: rgba(255, 255, 255, 0.94);
     border: 1px solid #fff;
-    min-height: 500px;
+    min-height: 550px;
 }
 .right-block  .menu-btn{
     width:20px;
@@ -223,6 +223,10 @@ div.menu-list a{
 }
 #user-info-edit >div >div:nth-of-type(2) >p:nth-of-type(n+2){
     color: red;
+}
+#user-info-edit .error-hint{
+    color:red;
+    display:none;
 }
 
 /*关注用户列表*/

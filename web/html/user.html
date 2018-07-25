@@ -9,7 +9,7 @@
     <link th:href="'/'+${local}+'/css/header.css'" rel="stylesheet">
 </head>
 <body>
-    <p id="user_id_recorder" th:text="${userInfo.userId}"></p>
+    <p id="user_id_recorder" th:text="${userID}"></p>
     <p style="display: none" th:text="${local}" id="web-local"></p>
     <div class="modal fade" id="loginModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
         <div class="modal-dialog" role="document">
@@ -68,7 +68,7 @@
                         <div>
                             <a th:href="'/'+${local}+'/user/'+${userID}">总览</a>
                             <a th:href="'/'+${local}+'/user/'+${userID}+'/userInfo'">个人信息</a>
-                            <a href="#">关注列表</a>
+                            <a th:href="'/'+${local}+'/user/'+${userID}+'/followList'">关注列表</a>
                             <a href="#">用户管理</a>
                             <a href="#">回收站</a>
                         </div>
@@ -136,15 +136,16 @@
                                 <p><span>电话号码:</span><span th:text="${userInfo.phone}">12345678910</span></p>
                                 <p><span>生日:</span><span th:text="${userInfo.birth}">2018-09-10</span></p>
                             </div>
-                            <p><span>个性签名:</span><span>there is nothing to show for you</span></p>
+                            <p><span>个性签名:</span><span th:text="${userInfo.whatsUp}">there is nothing to show for you</span></p>
                         </div>
                         <div style="display: none" class="overview-user" id="user-info-edit">
-                            <h3>编辑用户信息<button class="btn btn-success" id="btn-edit-user-info-fin">完成</button></h3>
+                            <h3>编辑用户信息<button class="btn btn-primary" id="btn-edit-user-info-fin">完成</button></h3>
                             <div>
                                 <div style="vertical-align: top">
                                     <p><span>用户名:</span><span th:text="${userInfo.account}">Yosoro</span></p>
                                     <p><span>昵称:</span><input class="form-control" name="username"
                                                               type="text" th:value="${userInfo.username}"></p>
+                                    <p class="error-hint">账户长度应在4~16位</p>
                                 </div>
                                 <div style="display: inline-block;width: 29%;">
                                     <img th:src="'/'+${local}+'/avatar/'+${userInfo.avatar}">
@@ -155,50 +156,48 @@
                                     <p style="display: none">图片格式不符</p>
                                 </div>
                             </div>
-                            <p style="margin-top: -150px;"><span>性别:</span>
+                            <p style="margin-top: -115px;"><span>性别:</span>
                                 <input class="form-control" type="radio" name="sex" value="male" th:checked="${userInfo.sex}=='male'">
                                 <span style="width: 5%">男</span>
                                 <input class="form-control" type="radio" name="sex" value="female" th:checked="${userInfo.sex}=='female'">
                                 <span style="width: 5%">女</span>
                             </p>
                             <p><span>邮箱:</span><input class="form-control" type="email" th:value="${userInfo.email}" name="email"></p>
+                            <p class="error-hint">邮箱格式不符</p>
                             <p><span>电话号码:</span><input class="form-control" type="number" name="phone" th:value="${userInfo.phone}"></p>
+                            <p class="error-hint">电话号码长度不符</p>
                             <p><span>生日:</span><input class="form-control" type="date" name="birth" th:value="${userInfo.birth}"></p>
+                            <p class="error-hint">生日不能为空</p>
                             <p><span>个性签名:</span><textarea rows="5" class="form-control" name="whatsUp" th:text="${userInfo.whatsUp}"></textarea></p>
+                            <p class="error-hint">个性签名长度为0~32</p>
                         </div>
                     </div>
                     <!--关注列表-->
-                    <div style="display: none" class="overview-follow">
-                        <table>
+                    <div th:if="${infoType}=='followList'" class="overview-follow" id="followList">
+                        <table th:if="${followList.size()>0}">
                             <tr>
                                 <th colspan="2">用户</th><th>上一次登录</th><th>关注日期</th><th>操作</th>
                             </tr>
-                            <tr>
-                                <td><img></td><td>Yosoro</td><td>2018-07-22</td><td>2018-07-23</td><td><a href="#">取消关注</a></td>
-                            </tr>
-                            <tr>
-                                <td><img></td><td>Yosoro</td><td>2018-07-22</td><td>2018-07-23</td><td><a href="#">取消关注</a></td>
-                            </tr>
-                            <tr>
-                                <td><img></td><td>Yosoro</td><td>2018-07-22</td><td>2018-07-23</td><td><a href="#">取消关注</a></td>
-                            </tr>
-                            <tr>
-                                <td><img></td><td>Yosoro</td><td>2018-07-22</td><td>2018-07-23</td><td><a href="#">取消关注</a></td>
-                            </tr>
-                            <tr>
-                                <td><img></td><td>Yosoro</td><td>2018-07-22</td><td>2018-07-23</td><td><a href="#">取消关注</a></td>
+                            <tr th:each="followUser :${followList}">
+                                <td><img th:src="'/'+${local}+'/avatar/'+${followUser.avatar}"></td>
+                                <td><a href="#" th:text="${followUser.username}"></a></td>
+                                <td th:text="${followUser.lastLogin}"></td>
+                                <td th:text="${followUser.followTime}"></td>
+                                <td><button class="btn btn-danger">取消关注</button></td>
                             </tr>
                         </table>
-                        <div class="skip-block">
+                        <div th:if="${followList.size()>0}" class="skip-block">
                             <button class="btn btn-primary">上一页</button>
-                            <span >1</span>/
-                            <span >2</span><input class="form-control" type="number" >
+                            <span th:text="${index}">1</span>/
+                            <span th:text="${total}">2</span><input class="form-control" type="number" >
                             <button class="btn btn-success">跳转</button>
                             <button class="btn btn-primary" >下一页</button>
                         </div>
+                        <h2 th:if="${followList.size()}==0" style="text-align: center">
+                            Sorry,你暂时没有关注的好友ㄟ( ▔, ▔ )ㄏ</h2>
                     </div>
                     <!--用户管理-->
-                    <div style="display: none" class="user-manager">
+                    <div th:if="(${infoType}=='userManage')&&(${userInfo.type==1})" class="user-manager">
                         <h3>用户管理</h3>
                         <div style="min-height: 400px">
                             <table>
