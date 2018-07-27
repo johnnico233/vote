@@ -287,12 +287,15 @@ div.user-manager td:nth-of-type(n+5){
     width:7%;
 }
 div.user-manager img{
-    width:50px;
-    height:50px;
+    width:60px;
+    height:60px;
     margin:5px;
 }
 div.user-manager td a{
     text-decoration: none;
+}
+td.user-id-hide{
+    display: none;
 }
 
 /*我的投票css*/
@@ -314,6 +317,7 @@ div.user-manager td a{
 .vote-manager td,.vote-manager th{
     font-weight: lighter;
     text-align: center;
+    padding: 5px 0;
 }
 .vote-manager td >a,.dustbin td>a{
     text-decoration: none;
@@ -322,11 +326,13 @@ div.user-manager td a{
 .dustbin th,.dustbin td{
     font-weight: lighter;
     text-align: center;
+    padding: 5px 0;
 }
 /*我的管理*/
 .user-message th,.user-message td{
     font-weight: lighter;
     text-align: center;
+    padding: 5px 0;
 }
 .user-message td>a{
     text-decoration: none;
@@ -338,4 +344,10 @@ div.user-manager td a{
 }
 .message-manager td>a{
     text-decoration: none;
+}
+/*垃圾箱css*/
+.dustbin td>img{
+    width: 60px;
+    height: 60px;
+    margin: 5px;
 }

@@ -3,11 +3,9 @@ package vote.service;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
-import vote.controller.UserInfoController;
+import org.springframework.ui.Model;
 import vote.dao.UserDao;
-import vote.domain.DeleteFollowInfo;
-import vote.domain.FollowUser;
-import vote.domain.User;
+import vote.domain.user.*;
 import vote.result.ResultCode;
 
 import java.io.BufferedOutputStream;
@@ -15,6 +13,7 @@ import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.nio.file.Files;
+import java.text.SimpleDateFormat;
 import java.util.List;
 
 @Service
@@ -28,7 +27,7 @@ public class UserService {
     public User getUserOverviewInfo(int userId){
         return userDao.getUserAllInfo(userId);
     }
-    public List<FollowUser> getFollowList(int userId,int start,int limit){
+    public List<FollowUser> getFollowList(int userId, int start, int limit){
         return userDao.getFollowUserList(userId,start,limit);
     }
     public ResultCode updateUserInfo(User user){
@@ -85,5 +84,49 @@ public class UserService {
     }
     public int deleteFollowUser(DeleteFollowInfo info){
         return userDao.deleteFollowUser(info);
+    }
+    public List<User> getManagedUser(int start,int limit){
+        return userDao.getManagedUser(start,limit);
+    }
+    public int getManagedUserCount(){
+        return userDao.getUserManagedCount();
+    }
+    public int banUser(User user,int userId){
+        return userDao.banUser(user,userId);
+    }
+    public User getUserInfoWithEvaluate(Model model,int userInfoId, int operatorId){
+        PrivateUser privateUser=userDao.getPrivateUserById(operatorId);
+        System.out.println(privateUser);
+        if(privateUser.getType()==1){
+            User user=userDao.getUserAllInfo(userInfoId);
+            SimpleDateFormat dateFormat=new SimpleDateFormat("yyyy-MM-dd");
+            model.addAttribute("stringDate",dateFormat.format(user.getBirth()));
+            return user;
+        }else{
+            return null;
+        }
+    }
+    public boolean checkUserValid(int id){
+        PrivateUser privateUser=userDao.getPrivateUserById(id);
+        return privateUser.getType()==1;
+    }
+    public List<UserWithBannedInfo> getBannedUsers(int start, int end, int userId){
+        boolean isValid=checkUserValid(userId);
+        if(isValid){
+            return userDao.getBannedUsers(start,end);
+        }else{
+            return null;
+        }
+    }
+    public int getBannedUserCount(int step){
+        return Integer.valueOf((userDao.getBanUserCount()-1)/step)+1;
+    }
+    public int recoverUser(User user,int myId){
+        boolean valid=checkUserValid(myId);
+        if(valid){
+            return userDao.recoverUser(user);
+        }else{
+            return -1;
+        }
     }
 }

@@ -13,7 +13,7 @@
     <table>
         <tr>
             <td class="left-block">
-                <img>
+                <img th:src="'/'+${local}+'/avatar/'+${topicUser.avatar}">
                 <p th:text="${userInfo.username}"></p>
                 <p th:text="${userInfo.whatsUp}"></p>
                 <p>上次登录时间:</p>
@@ -45,7 +45,7 @@
         </tr>
         <tr th:each="voteMessage ,stats: ${voteMessages}">
             <td class="left-block" th:if="${voteMessage.available}">
-                <img>
+                <img th:src="'/'+${local}+'/avatar/'+${voteMessage.avatar}">
                 <p th:text="${voteMessage.userName}">用户名</p>
                 <p th:text="${voteMessage.whatsUp}">whatsUp</p>
                 <p>上次登录时间:</p>
@@ -70,7 +70,9 @@
     <div class="message-block">
         <div class="send-message">
             <h3>发表回复</h3>
-            <textarea class="form-control" rows="10"></textarea>
+            <p th:if="${myVoteMessage}!=null" th:text="${myVoteMessage.getId()}" id="message-id" style="display:none"></p>
+            <textarea class="form-control" rows="10" id="message-input"
+                      th:text="(${myVoteMessage}!=null)?(${myVoteMessage.content}):''"></textarea>
             <span>enter + ctrl发送</span>
             <button class="btn btn-success" id="send-message-btn" disabled>发送</button>
         </div>

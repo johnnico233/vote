@@ -69,20 +69,20 @@
                             <a th:href="'/'+${local}+'/user/'+${userID}">总览</a>
                             <a th:href="'/'+${local}+'/user/'+${userID}+'/userInfo'">个人信息</a>
                             <a th:href="'/'+${local}+'/user/'+${userID}+'/followList'">关注列表</a>
-                            <a href="#">用户管理</a>
-                            <a href="#">回收站</a>
+                            <a th:href="'/'+${local}+'/user/manage'">用户管理</a>
+                            <a th:href="'/'+${local}+'/user/dustbinUser'">回收站</a>
                         </div>
                     </div>
                     <div class="menu-list" id="vote-info-block"><p class="menu-title">投票信息</p>
                         <div>
-                            <a href="#">我的投票</a>
-                            <a href="#">投票管理</a>
-                            <a href="#">回收站</a>
+                            <a th:href="'/'+${local}+'/user/myVotes'">我的投票</a>
+                            <a th:href="'/'+${local}+'/user/voteManage'">投票管理</a>
+                            <a th:href="'/'+${local}+'/user/dustbinVote'">回收站</a>
                         </div>
                     </div>
                     <div class="menu-list" id="message-info-block"><p class="menu-title">留言信息</p>
                         <div>
-                            <a href="#">我的留言</a>
+                            <a th:href="'/'+${local}+'/user/myVoteMessage'">我的留言</a>
                             <a href="#">留言管理</a>
                             <a href="#">回收站</a>
                         </div>
@@ -119,8 +119,8 @@
                         </div>
                     </div>
                     <!--用户信息-->
-                    <div th:if="${infoType}=='userInfo'" class="user-block">
-                        <div class="overview-user" id="user-info-show">
+                    <div th:if="${infoType}=='userInfo' or ${infoType}=='modifyUser'" class="user-block" id="userInfo-block">
+                        <div class="overview-user" id="user-info-show" th:style="${infoType}=='userInfo'?'':'display:none'">
                             <h3>用户信息<button class="btn btn-primary" id="btn-edit-user-info">编辑</button></h3>
                             <div>
                                 <div>
@@ -138,9 +138,12 @@
                             </div>
                             <p><span>个性签名:</span><span th:text="${userInfo.whatsUp}">there is nothing to show for you</span></p>
                         </div>
-                        <div style="display: none" class="overview-user" id="user-info-edit">
+                        <div class="overview-user" id="user-info-edit"
+                             th:style="${infoType}=='modifyUser'?'display:block':'display: none'">
                             <h3>编辑用户信息<button class="btn btn-primary" id="btn-edit-user-info-fin">完成</button></h3>
                             <div>
+                                <p th:if="${infoType}=='modifyUser'" id="manage-modify-user-id" th:text="${userInfo.userId}"
+                                    style="display:none"></p>
                                 <div style="vertical-align: top">
                                     <p><span>用户名:</span><span th:text="${userInfo.account}">Yosoro</span></p>
                                     <p><span>昵称:</span><input class="form-control" name="username"
@@ -166,10 +169,12 @@
                             <p class="error-hint">邮箱格式不符</p>
                             <p><span>电话号码:</span><input class="form-control" type="number" name="phone" th:value="${userInfo.phone}"></p>
                             <p class="error-hint">电话号码长度不符</p>
-                            <p><span>生日:</span><input class="form-control" type="date" name="birth" th:value="${userInfo.birth}"></p>
+                            <p><span>生日:</span><input class="form-control" type="date" name="birth"
+                                       th:value="${stringDate}!=null?${stringDate}:''"></p>
                             <p class="error-hint">生日不能为空</p>
                             <p><span>个性签名:</span><textarea rows="5" class="form-control" name="whatsUp" th:text="${userInfo.whatsUp}"></textarea></p>
                             <p class="error-hint">个性签名长度为0~32</p>
+                            <p th:if="${returnPage}!=null" th:text="${returnPage}" id="manage-return-page"></p>
                         </div>
                     </div>
                     <!--关注列表-->
@@ -197,140 +202,139 @@
                             Sorry,你暂时没有关注的好友ㄟ( ▔, ▔ )ㄏ</h2>
                     </div>
                     <!--用户管理-->
-                    <div th:if="(${infoType}=='userManage')&&(${userInfo.type==1})" class="user-manager">
-                        <h3>用户管理</h3>
+                    <div th:if="(${infoType}=='userManage')and(${userInfo.type}==1)" class="user-manager">
                         <div style="min-height: 400px">
                             <table>
                                 <tr>
-                                    <th></th><th>账号</th><th>用户名</th><th>上一次登录</th><th colspan="2">操作</th>
+                                    <th></th><th>账号</th><th>用户名</th><th>上一次登录</th><th colspan="3">操作</th>
                                 </tr>
-                                <tr>
-                                    <td><img></td><td>Yosoro</td><td>yosoro</td><td>2018-08-23</td>
-                                    <td><a href="#">修改</a></td><td><a href="#">删除</a></td>
+                                <tr th:each="user:${managedUser}">
+                                    <td><img th:src="'/'+${local}+'/avatar/'+${user.avatar}"></td>
+                                    <td><a href="#" th:text="${user.account}"></a></td>
+                                    <td><a th:text="${user.username}" href="#"></a></td>
+                                    <td th:text="${user.getLastLogin()}"></td>
+                                    <td><button class="btn btn-info">修改</button></td>
+                                    <td><button class="btn btn-danger">封禁</button></td>
+                                    <td class="user-id-hide" th:text="${user.userId}"></td>
                                 </tr>
-                                <tr>
-                                    <td><img></td><td>Yosoro</td><td>yosoro</td><td>2018-08-23</td>
-                                    <td><a href="#">修改</a></td><td><a href="#">删除</a></td>
-                                </tr>
-                                <tr>
-                                    <td><img></td><td>Yosoro</td><td>yosoro</td><td>2018-08-23</td>
-                                    <td><a href="#">修改</a></td><td><a href="#">删除</a></td>
-                                </tr>
+
                             </table>
                         </div>
                         <div class="skip-block">
                             <button class="btn btn-primary" >上一页</button>
-                            <span >1</span>/
-                            <span >2</span><input class="form-control" type="number" id="index">
+                            <span th:text="${index}">1</span>/
+                            <span th:text="${total}">2</span><input class="form-control" type="number" id="index">
                             <button class="btn btn-success">跳转</button>
                             <button class="btn btn-primary">下一页</button>
                         </div>
                     </div>
                     <!--我的投票-->
-                    <div style="display: none" class="user-vote-manager">
+                    <div th:if="${infoType}=='userVotes'" class="user-vote-manager">
                         <div style="min-height: 400px">
                             <table>
                                 <tr>
                                     <th>投票标题</th><th>我的投票</th><th>投票时间</th><th>状态</th>
                                 </tr>
-                                <tr>
-                                    <td>测试标题1</td><td>
-                                    <p>a</p><p>b</p><p>c</p>
-                                </td><td>2015-08-23</td><td>结束</td>
-                                </tr>
-                                <tr>
-                                    <td>测试标题1</td><td>
-                                    <p>a</p><p>b</p><p>c</p>
-                                </td><td>2015-08-23</td><td>未结束</td>
-                                </tr>
-                                <tr>
-                                    <td>测试标题1</td><td>
-                                    <p>a</p><p>b</p><p>c</p>
-                                </td><td>2015-08-23</td><td>未结束</td>
+                                <tr th:each="voteHistory:${voteHistories}">
+                                    <td><a th:text="${voteHistory.topicName}"
+                                           th:href="'/'+${local}+'/voteSubject/'+${voteHistory.topicId}"></a></td>
+                                    <td><p th:each="option:${voteHistory.getOptionNames()}" th:text="${option}"></p></td>
+                                    <td th:text="${voteHistory.sendDate}">2015-08-23</td>
+                                    <td th:text="${voteHistory.finished}?'已结束':'未结束'"
+                                        th:style="${voteHistory.finished}?'color:red':'color:green'"></td>
                                 </tr>
                             </table>
                         </div>
                         <div class="skip-block">
                             <button class="btn btn-primary">上一页</button>
-                            <span >1</span>/
-                            <span >2</span><input class="form-control" type="number" >
+                            <span th:text="${index}">1</span>/
+                            <span th:text="${total}">2</span><input class="form-control" type="number" >
                             <button class="btn btn-success">跳转</button>
                             <button class="btn btn-primary" >下一页</button>
                         </div>
                     </div>
                     <!--投票管理-->
-                    <div style="display: none" class="vote-manager">
+                    <div th:if="${infoType}=='voteManage'" class="vote-manager">
                         <div style="min-height: 400px">
                             <table>
-                                <tr><th>编号</th><th>投票标题</th><th>投票内容</th><th>发布时间</th><th>操作</th></tr>
-                                <tr><td>#1</td><td>title for test</td>
-                                    <td><div>it is very long very long </div></td>
-                                    <td>2015-09-02</td><td><a href="#">删除</a></td>
-                                </tr>
-                                <tr><td>#1</td><td>title for test</td>
-                                    <td><div>it is very long very long </div></td>
-                                    <td>2015-09-02</td><td><a href="#">删除</a></td>
-                                </tr>
-                                <tr><td>#1</td><td>title for test</td>
-                                    <td><div>it is very long very long </div></td>
-                                    <td>2015-09-02</td><td><a href="#">删除</a></td>
+                                <tr><th>编号</th><th>投票标题</th><th>投票内容</th><th>发布时间</th><th colspan="2">操作</th></tr>
+                                <tr th:each="voteItem:${voteList}">
+                                    <td th:text="'#'+${voteItem.id}"></td>
+                                    <td><a th:text="(${voteItem.topic.length()}>=10)?(${voteItem.topic.substring(0,10)}+'....')
+                                    :${voteItem.topic}" th:href="'/'+${local}+'/voteSubject/'+${voteItem.id}"
+                                    th:title="${voteItem.topic}">title</a></td>
+                                    <td th:text="(${voteItem.content.length()}>=10)?(${voteItem.content.substring(0,10)}+'....')
+                                    :${voteItem.content}" th:title="${voteItem.content}">content</td>
+                                    <td th:text="${voteItem.createTime}">2015-09-02</td>
+                                    <td><button class="btn btn-info" th:disabled="${!voteItem.modifiable}">修改</button></td>
+                                    <td><button class="btn btn-danger">删除</button></td>
                                 </tr>
                             </table>
                         </div>
                         <div class="skip-block">
                             <button class="btn btn-primary">上一页</button>
-                            <span >1</span>/
-                            <span >2</span><input class="form-control" type="number" >
+                            <span th:text="${index}">1</span>/
+                            <span th:text="${total}">2</span><input class="form-control" type="number" >
                             <button class="btn btn-success">跳转</button>
                             <button class="btn btn-primary" >下一页</button>
                         </div>
                     </div>
                     <!--垃圾箱,可同时供3个使用-->
-                    <div style="display: none" class="dustbin">
+                    <div th:if="(${infoType}=='dustbinUser') or (${infoType}=='dustbinVote')" class="dustbin" th:id="${infoType}">
                         <div style="min-height: 400px">
                             <table>
-                                <tr><th>编号</th><th>投票标题</th><th>删除时间</th><th>操作</th></tr>
-                                <tr>
-                                    <td>#1</td><td>test for title</td><td>2015-08-07</td>
-                                    <td><a href="#">恢复</a></td>
+                                <tr th:if="${infoType}=='dustbinUser'">
+                                    <th colspan="2">用户账号</th><th>用户名</th>
+                                    <th>封停时间</th><th>操作</th></tr>
+                                <tr th:if="${infoType}=='dustbinVote'">
+                                    <th>编号</th><th>投票标题</th><th>删除时间</th><th>操作</th></tr>
+                                <tr th:if="${infoType}=='dustbinUser'" th:each="banedUser:${userList}">
+                                    <td><img th:src="'/'+${local}+'/avatar/'+${banedUser.avatar}" alt="user avatar"></td>
+                                    <td th:text="${banedUser.account}">account</td>
+                                    <td th:text="${banedUser.username}">username</td>
+                                    <td th:text="${banedUser.bannedTime}">2015-08-07</td>
+                                    <td><button class="btn btn-info">恢复</button></td>
+                                    <td style="display: none" id="bannedUserId" th:text="${banedUser.userId}"></td>
                                 </tr>
-                                <tr>
-                                    <td>#1</td><td>test for title</td><td>2015-08-07</td>
-                                    <td><a href="#">恢复</a></td>
+                                <tr th:if="${infoType}=='dustbinVote'" th:each="bannedTopic:${bannedList}">
+                                    <td th:text="'#'+${bannedTopic.voteId}"></td>
+                                    <td th:text="${bannedTopic.voteName}">test for title</td>
+                                    <td th:text="${bannedTopic.bannedTime}">2015-08-07</td>
+                                    <td><button class="btn btn-info">恢复</button></td>
+                                    <td style="display: none" th:text="${bannedTopic.banId}"></td>
                                 </tr>
                             </table>
                         </div>
                         <div class="skip-block">
                             <button class="btn btn-primary">上一页</button>
-                            <span >1</span>/
-                            <span >2</span><input class="form-control" type="number" >
+                            <span th:text="${index}">1</span>/
+                            <span th:text="${total}">2</span><input class="form-control" type="number" >
                             <button class="btn btn-success">跳转</button>
                             <button class="btn btn-primary" >下一页</button>
                         </div>
                     </div>
                     <!--我的留言-->
-                    <div style="display: none" class="user-message">
+                    <div th:if="${infoType}=='myVoteMessage'" class="user-message">
                         <div style="min-height: 400px">
                             <table>
-                                <tr><th>投票标题</th><th>留言内容</th><th colspan="3">操作</th></tr>
-                                <tr><td><a href="#">test for title</a></td><td><a href="#">test for message</a></td>
-                                    <td><a href="#">修改</a></td><td><a href="#">删除</a></td>
-                                    <td><a href="#">查看</a></td>
-                                </tr>
-                                <tr><td><a href="#">test for title</a></td><td><a href="#">test for message</a></td>
-                                    <td><a href="#">修改</a></td><td><a href="#">删除</a></td>
-                                    <td><a href="#">查看</a></td>
-                                </tr>
-                                <tr><td><a href="#">test for title</a></td><td><a href="#">test for message</a></td>
-                                    <td><a href="#">修改</a></td><td><a href="#">删除</a></td>
-                                    <td><a href="#">查看</a></td>
+                                <tr><th>投票标题</th><th>留言内容</th><th>留言时间</th><th colspan="2">操作</th></tr>
+                                <tr th:each="message:${voteMessageList}">
+                                    <td><a th:href="'/'+${local}+'/voteSubject/'+${message.voteId}"
+                                           th:text="${message.voteTitle}">test for title</a></td>
+                                    <td><a th:href="'/'+${local}+'/voteSubject/'+${message.voteId}"
+                                           th:text="${message.content}">test for message</a></td>
+                                    <td th:text="${message.sendTime}">时间</td>
+                                    <td><button class="btn btn-info">修改</button></td>
+                                    <td><button class="btn btn-danger">删除</button></td>
+                                    <td th:text="${message.voteId}" style="display:none"></td>
+                                    <td th:text="${message.id}" style="display:none"></td>
                                 </tr>
                             </table>
                         </div>
                         <div class="skip-block">
                             <button class="btn btn-primary">上一页</button>
-                            <span >1</span>/
-                            <span >2</span><input class="form-control" type="number" >
+                            <span th:text="${index}">1</span>/
+                            <span th:text="${total}">2</span><input class="form-control" type="number" >
                             <button class="btn btn-success">跳转</button>
                             <button class="btn btn-primary" >下一页</button>
                         </div>

@@ -5,11 +5,7 @@ import org.apache.ibatis.session.SqlSessionFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 import vote.controller.VoteSubjectController;
-import vote.domain.TopicOption;
-import vote.domain.UploadVoteTopic;
-import vote.domain.VoteMessage;
-import vote.domain.VoteTopic;
-import vote.result.ResultCode;
+import vote.domain.vote.*;
 
 import java.util.HashMap;
 import java.util.List;
@@ -109,6 +105,158 @@ public class VoteDao {
             map.put("total",-1);
             session.selectOne("addVoteMessage",map);
             return (Integer) map.get("total");
+        }finally {
+            session.close();
+        }
+    }
+    public List<UserVoteHistory> getUserVoteHistories(int userId, int start, int end){
+        SqlSession session=factory.openSession();
+        try{
+            Map<String,Integer> map=new HashMap<>();
+            map.put("userId",userId);
+            map.put("start",start);
+            map.put("end",end);
+            return session.selectList("getMyVoteList",map);
+        }finally {
+            session.close();
+        }
+    }
+    public int getVoteHistorySizeByUserId(int userId){
+        SqlSession session=factory.openSession();
+        try{
+            return session.selectOne("myVoteListCount",userId);
+        }finally {
+            session.close();
+        }
+    }
+    public List<VoteTopic> getVoteList(int start,int end,int notBanned){
+        SqlSession session=factory.openSession();
+        try{
+            Map<String,Integer> map=new HashMap<>();
+            map.put("start",start);
+            map.put("end",end);
+            map.put("usable",notBanned);
+            return session.selectList("getVoteTopicList",map);
+        }finally {
+            session.close();
+        }
+    }
+    public int getVoteListSize(int notBanned){
+        SqlSession session=factory.openSession();
+        try{
+            return session.selectOne("getVoteTopicListSize",notBanned);
+        }finally {
+            session.close();
+        }
+    }
+    public int banVoteTopic(int topicId){
+        SqlSession session=factory.openSession();
+        try{
+            int updateResult=session.update("banVoteTopic",topicId);
+            int banResult=session.update("addBanVoteTopicInfo",topicId);
+            session.commit();
+            return updateResult==1&&banResult==1?1:0;
+        }finally {
+            session.close();
+        }
+    }
+    public int updateVoteTopic(UploadVoteTopic uploadVoteTopic){
+        SqlSession session=factory.openSession();
+        try{
+            String[] names={"topic","content","startTime","endTime","isMulti","userId","id","totalVoteCount","result"};
+            Object[] params={uploadVoteTopic.getTopic(), uploadVoteTopic.getContent(), uploadVoteTopic.getStartTime(), uploadVoteTopic.getEndTime(),
+                    uploadVoteTopic.getIsMulti(), uploadVoteTopic.getUserId(),uploadVoteTopic.getId(),uploadVoteTopic.getTotalVoteCount(),0};
+            Map<String,Object> map=new HashMap<>();
+            for(int i=0;i<names.length;i++){
+                map.put(names[i],params[i]);
+            }
+            session.selectOne("updateVoteTopic",map);
+            return (int)map.get("result");
+        }finally {
+            session.close();
+        }
+    }
+    public boolean updateVoteTopicOption(UploadVoteTopic uploadVoteTopic){
+        SqlSession session=factory.openSession();
+        try{
+            int insertCount=0;
+            for(String option:uploadVoteTopic.getOptions())
+                insertCount+=session.insert("addTopicOptions",new TopicOption(option,uploadVoteTopic.getId()));
+            session.commit();
+            return insertCount==uploadVoteTopic.getOptions().length;
+        }finally {
+            session.close();
+        }
+    }
+    public List<BannedVoteTopic> getBannedVoteTopicList(int start,int limit){
+        SqlSession session=factory.openSession();
+        try{
+            Map<String,Integer> map=new HashMap<>();
+            map.put("start",start);
+            map.put("limit",limit);
+            return session.selectList("getBannedVoteTopicList",map);
+        }finally {
+            session.close();
+        }
+    }
+    public int getBannedVoteTopicSize(){
+        SqlSession session=factory.openSession();
+        try{
+            return session.selectOne("getBannedVoteTopicListSize");
+        }finally {
+            session.close();
+        }
+    }
+    public int recoverBannedVote(BannedVoteTopic bannedVoteTopic){
+        SqlSession session=factory.openSession();
+        try{
+            Map<String,Integer> map=new HashMap<>();
+            map.put("banId",bannedVoteTopic.getBanId());
+            map.put("topicId",bannedVoteTopic.getVoteId());
+            map.put("result",0);
+            session.selectOne("recoverBanVote",map);
+            return map.get("result");
+        }finally {
+            session.close();
+        }
+    }
+    public int getMyVoteMessageSize(int userId){
+        SqlSession session=factory.openSession();
+        try{
+            return session.selectOne("getMyVoteMessageSize",userId);
+        }finally {
+            session.close();
+        }
+    }
+    public List<VoteMessage> getMyVoteMessageList(int userId,int start,int limit){
+        SqlSession session=factory.openSession();
+        try{
+            Map<String,Integer> map=new HashMap<>();
+            map.put("id",userId);
+            map.put("start",start);
+            map.put("limit",limit);
+            return session.selectList("getMyVoteMessages",map);
+        }finally {
+            session.close();
+        }
+    }
+    public VoteMessage getVoteMessageById(int messageId){
+        SqlSession session=factory.openSession();
+        try{
+            return session.selectOne("getVoteMessageById",messageId);
+        }finally {
+            session.close();
+        }
+    }
+    public int updateVoteMessageById(VoteMessage voteMessage){
+        SqlSession session=factory.openSession();
+        try{
+            Map<String,Object> map=new HashMap<>();
+            map.put("messageId",voteMessage.getId());
+            map.put("content",voteMessage.getContent());
+            int result=session.update("updateVoteMessage",map);
+            session.commit();
+            return result;
         }finally {
             session.close();
         }

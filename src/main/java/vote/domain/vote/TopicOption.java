@@ -1,4 +1,4 @@
-package vote.domain;
+package vote.domain.vote;
 
 public class TopicOption {
     private String name;

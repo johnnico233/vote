@@ -1,9 +1,4 @@
-package vote.domain;
-
-import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
-import com.fasterxml.jackson.databind.annotation.JsonSerialize;
-import vote.config.JsonDateSerializer;
-import vote.config.JsonDecDateSerializer;
+package vote.domain.vote;
 
 import java.util.Arrays;
 import java.util.Date;

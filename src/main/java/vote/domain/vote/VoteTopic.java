@@ -1,4 +1,4 @@
-package vote.domain;
+package vote.domain.vote;
 
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
@@ -21,6 +21,8 @@ public class VoteTopic {
     protected boolean isMulti;
     protected boolean usable;
     protected int totalVoteCount;
+    private Date createTime;
+    private boolean modifiable;
 
     public VoteTopic(int id, int userId, String topic, String content, Date startTime, Date endTime, boolean isMulti, boolean usable) {
         this.id = id;
@@ -119,6 +121,22 @@ public class VoteTopic {
         this.totalVoteCount = totalVoteCount;
     }
 
+    public Date getCreateTime() {
+        return createTime;
+    }
+
+    public void setCreateTime(Date createTime) {
+        this.createTime = createTime;
+    }
+
+    public boolean isModifiable() {
+        return modifiable;
+    }
+
+    public void setModifiable(boolean modifiable) {
+        this.modifiable = modifiable;
+    }
+
     @Override
     public String toString() {
         return "VoteTopic{" +
@@ -130,6 +148,9 @@ public class VoteTopic {
                 ", endTime=" + endTime +
                 ", isMulti=" + isMulti +
                 ", usable=" + usable +
+                ", totalVoteCount=" + totalVoteCount +
+                ", createTime=" + createTime +
+                ", modifiable=" + modifiable +
                 '}';
     }
 }

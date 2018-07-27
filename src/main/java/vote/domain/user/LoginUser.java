@@ -1,4 +1,4 @@
-package vote.domain;
+package vote.domain.user;
 
 public class LoginUser extends PrivateUser {
     private boolean remember;

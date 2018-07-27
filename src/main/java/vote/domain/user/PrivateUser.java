@@ -1,10 +1,11 @@
-package vote.domain;
+package vote.domain.user;
 
 public class PrivateUser {
     protected String account;
     protected int userId=-1;
     protected String password;
     protected int type;
+    protected boolean loginable;
 
     public PrivateUser() {
     }
@@ -46,6 +47,14 @@ public class PrivateUser {
 
     public void setType(int type) {
         this.type = type;
+    }
+
+    public boolean isLoginable() {
+        return loginable;
+    }
+
+    public void setLoginable(boolean loginable) {
+        this.loginable = loginable;
     }
 
     @Override

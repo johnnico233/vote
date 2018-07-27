@@ -1,4 +1,4 @@
-package vote.domain;
+package vote.domain.user;
 
 import java.util.Date;
 

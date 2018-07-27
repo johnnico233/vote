@@ -5,6 +5,8 @@ $(function(){
     setMaxSizeHint();
     setDate();
     $("#send-vote").on("click",function(){checkAndSend();});
+    initCount=$(".vote_option").length;
+    
 });
 
 function voteOptionOperation(){
@@ -198,21 +200,33 @@ function send(){
     $.each($("input[name='vote_option']"),function(idx,item){
         options.push($(item).val());
     });
+    var startTime=$("input[name='start-time']").val();
+    var endTime=$("input[name='end-time']").val();
+    startTime=startTime.substring(0,startTime.indexOf("T"))+" "+startTime.substring(startTime.indexOf("T")+1);
+    endTime=endTime.substring(0,endTime.indexOf("T"))+" "+endTime.substring(endTime.indexOf("T")+1);
     var data={"topic":$.trim($("input[name='title']").val()),"content":$.trim($("textarea[name='content']").val()),
               "isMulti":$("input[name='vote_type']:checked").val()=="multi","totalVoteCount":$("input[type='number']").val(),
-              "options":options,"startTime":$("input[name='start-time']").val(),"endTime":$("input[name='end-time']").val(),
-              "userId":1};
+              "options":options,"startTime":startTime,"endTime":endTime,"userId":$("#user-id").html()};
+    var url="/"+$("#web-local").html()+"/voteUpload/addNewTopic";
+    if($("#vote-topic-id").length>0){
+        data['id']=$("#vote-topic-id").html().substring(1);
+        url="/"+$("#web-local").html()+"/voteUpload/updateTopic";
+    }
     console.log(data);
     $.ajax({
-        url:"/"+$("#web-local").html()+"/voteUpload/addNewTopic",
+        url:url,
         type:"post",
         dataType:"json",
         data:JSON.stringify(data),
         headers:{'Content-type':'application/json;charset=utf-8'}
     }).done(function(json){
+        console.log(json);
         if(json.code=='SUCCESS') {
             alert("发起投票成功，即将进入到对应的投票页面");
             window.location.href="/"+$("#web-local").html()+"/voteSubject/"+json.id;
+        }else if(json.resultCode=='SUCCESS'){
+            alert("修改投票成功,即将返回投票管理页面");
+            window.location.href="/"+$("#web-local").html()+"/user/voteManage";
         } else
             alert("出现了错误！请联系系统管理员")
     }).fail(function(xhr,status,errorThrown){

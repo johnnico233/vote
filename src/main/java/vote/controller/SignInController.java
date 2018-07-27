@@ -9,16 +9,13 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
 import vote.dao.UserDao;
-import vote.domain.LoginUser;
-import vote.domain.PrivateUser;
+import vote.domain.user.LoginUser;
 import vote.result.Result;
 import vote.result.ResultCode;
 
 import javax.servlet.http.Cookie;
-import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
-import java.io.IOException;
 
 @Controller
 public class SignInController {

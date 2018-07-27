@@ -2,26 +2,30 @@
 <!DOCTYPE mapper
         PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
         "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
-<mapper namespace="vote.domain.User">
-    <select id="selectPrivateUserById" resultType="vote.domain.PrivateUser">
+<mapper namespace="vote.domain.user.User">
+    <select id="selectPrivateUserById" resultMap="privateUserResultMap">
         select * from user where user_id = #{userId}
     </select>
+    <resultMap id="privateUserResultMap" type="vote.domain.user.PrivateUser">
+        <result property="userId" column="user_id"/>
+        <result property="type" column="user_type_id"/>
+    </resultMap>
     <select id="selectAllUser" resultMap="getUserInfo">
         select * from user
     </select>
     <select id="checkUserValid" resultMap="getUserInfo">
         select * from user where account = #{account} and password = #{password}
     </select>
-    <select id="checkUserExist" resultType="vote.domain.User">
+    <select id="checkUserExist" resultType="vote.domain.user.User">
         select * from user where account = #{account}
     </select>
-    <select id="checkPrivateUserExist" resultType="vote.domain.PrivateUser">
+    <select id="checkPrivateUserExist" resultType="vote.domain.user.PrivateUser">
         select * from user where account = #{account}
     </select>
-    <resultMap id="getUserInfo" type="vote.domain.PrivateUser">
+    <resultMap id="getUserInfo" type="vote.domain.user.PrivateUser">
         <id property="userId" column="user_id"></id>
     </resultMap>
-    <select id="checkUsernameExist" resultMap="userMap" parameterType="vote.domain.User">
+    <select id="checkUsernameExist" resultMap="userMap" parameterType="vote.domain.user.User">
         select * from user_info where user_name = #{username}
     </select>
     <select id="checkUserPhoneExist" resultMap="userMap">
@@ -30,13 +34,13 @@
     <select id="checkUserEmailExist" resultMap="userMap">
         select * from user_info where user_email = #{email}
     </select>
-    <insert id="addNewUserPrivate" parameterType="vote.domain.User">
+    <insert id="addNewUserPrivate" parameterType="vote.domain.user.User">
         insert into user(account,password,user_type_id) values(#{account},#{password},#{type})
     </insert>
-    <select id="getUserIdByAccount" resultType="vote.domain.PrivateUser">
+    <select id="getUserIdByAccount" resultType="vote.domain.user.PrivateUser">
         select user_id as userId from user where account = #{account}
     </select>
-    <insert id="addNewUserInfo" parameterType="vote.domain.User">
+    <insert id="addNewUserInfo" parameterType="vote.domain.user.User">
         insert into user_info(user_id,user_name,user_sex,user_phone,user_email,create_time,birth)
         values(#{userId},#{username},#{sex},#{phone},#{email},now(),#{birth})
     </insert>
@@ -44,7 +48,7 @@
         select * from user_info where user_id = #{id}
     </select>
     
-    <resultMap id="userMap" type="vote.domain.User">
+    <resultMap id="userMap" type="vote.domain.user.User">
         <id property="userId" column="user_id"/>
         <result property="username" column="user_name"/>
         <result property="sex" column="user_sex"/>
@@ -60,7 +64,7 @@
     <select id="getUserAllInfo" resultMap="userMap">
         select * from user a,user_info b where a.user_id = b.user_id and a.user_id = #{userId}
     </select>
-    <resultMap id="followUserInfoMap" type="vote.domain.FollowUser">
+    <resultMap id="followUserInfoMap" type="vote.domain.user.FollowUser">
         <id property="userId" column="user_id"/>
         <result property="username" column="user_name"/>
         <result property="sex" column="user_sex"/>
@@ -82,29 +86,74 @@
         select b.*,c.account,a.follow_time  from user_relationship a left join user_info b on a.follow_user_id=b.user_id
         left join user c on a.user_id = c.user_id where a.user_id = #{userId} limit #{start},#{limit};
     </select>
-    <update id="updateUserInfo" parameterType="vote.domain.User">
+    <update id="updateUserInfo" parameterType="vote.domain.user.User">
         update user_info set user_name = #{username},user_sex=#{sex},user_phone=#{phone},user_email = #{email},
         user_whatsup = #{whatsUp},birth=#{birth},user_avatar = #{avatar} where user_id = #{userId};
     </update>
-    <select id="checkUserChangeAvatar" parameterType="vote.domain.User" resultMap="userMap">
+    <select id="checkUserChangeAvatar" parameterType="vote.domain.user.User" resultMap="userMap">
         select * from user_info where user_id = #{userId}
     </select>
 
-    <select id="checkUsernameExistExceptMe" resultMap="userMap"  parameterType="vote.domain.User">
+    <select id="checkUsernameExistExceptMe" resultMap="userMap"  parameterType="vote.domain.user.User">
         select * from user_info where user_name = #{username} and user_id != #{userId};
     </select>
-    <select id="checkPhoneExistExceptMe" resultMap="userMap" parameterType="vote.domain.User">
+    <select id="checkPhoneExistExceptMe" resultMap="userMap" parameterType="vote.domain.user.User">
         select * from user_info where user_phone = #{phone} and user_id != #{userId};
     </select>
-    <select id="checkEmailExistExceptMe" resultMap="userMap" parameterType="vote.domain.User">
+    <select id="checkEmailExistExceptMe" resultMap="userMap" parameterType="vote.domain.user.User">
         select * from user_info where user_email = #{email} and user_id != #{userId};
     </select>
 
     <select id="getFollowUserCount" parameterType="java.lang.Integer" resultType="java.lang.Integer">
         select COUNT(*) from user_relationship where user_id = #{id};
     </select>
-    <delete id="deleteFollowUser" parameterType="vote.domain.DeleteFollowInfo">
+    <delete id="deleteFollowUser" parameterType="vote.domain.user.DeleteFollowInfo">
         delete from user_relationship where user_id = #{userId} and follow_user_id =
         (select user_id from user_info where user_name = #{followUserName} );
     </delete>
+
+    <parameterMap id="managedUserMap" type="java.util.Map">
+        <parameter property="start"/>
+        <parameter property="limit"/>
+    </parameterMap>
+
+    <select id="getManagedUser" resultMap="userMap" parameterMap="managedUserMap">
+        select * from user left join user_info using(user_id) where user_type_id = 2 and loginable = 1 limit #{start} ,#{limit};
+    </select>
+
+    <select id="getTotalManagedUser" resultType="java.lang.Integer">
+        select count(*) from user where user_type_id = 2 and loginable = 1;
+    </select>
+
+    <parameterMap id="banUserMap" type="java.util.Map">
+        <parameter property="userId" mode="IN" javaType="java.lang.Integer"/>
+        <parameter property="account" mode="IN" javaType="java.lang.String"/>
+        <parameter property="result" mode="OUT" javaType="java.lang.Integer" jdbcType="INTEGER"/>
+    </parameterMap>
+
+    <select id="banUser" parameterMap="banUserMap" statementType="CALLABLE">
+        call banUser(?,?,?);
+    </select>
+
+    <select id="getBannedUsers" resultMap="bannedUserInfoMap">
+        select * from dustbin a left join user on user_id = ban_id left join user_info b on ban_id = b.user_id
+        limit #{start} ,#{limit};
+    </select>
+    <resultMap id="bannedUserInfoMap" type="vote.domain.user.UserWithBannedInfo">
+        <result property="avatar" column="user_avatar"/>
+        <result property="username" column="user_name"/>
+        <result property="bannedTime" column="ban_time"/>
+        <result property="userId" column="user_id"/>
+    </resultMap>
+    <select id="getBanUserCount" resultType="java.lang.Integer">
+        select count(*) from dustbin where ban_type =1;
+    </select>
+
+    <parameterMap id="recoverUserMap" type="java.util.Map">
+        <parameter property="userId"/>
+        <parameter property="result" mode="OUT" jdbcType="INTEGER"/>
+    </parameterMap>
+    <select id="recoverUser" parameterMap="recoverUserMap" statementType="CALLABLE">
+        call recoverUser(?,?);
+    </select>
 </mapper>

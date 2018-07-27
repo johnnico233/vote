@@ -1,4 +1,4 @@
-package vote.domain;
+package vote.domain.vote;
 
 import java.util.Date;
 import java.util.List;
@@ -59,4 +59,5 @@ public class VoteTopicWithOption extends VoteTopic{
                 ", totalVoteCount=" + totalVoteCount +
                 '}';
     }
+
 }

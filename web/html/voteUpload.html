@@ -8,27 +8,41 @@
     <link th:href="'/'+${local}+'/css/voteUpload.css'" rel="stylesheet">
 </head>
 <body>
+    <p id="user-id" th:text="${userID}" style="display: none"></p>
     <p id="web-local" th:text="${local}" style="display: none;"></p>
     <div class="main-container">
-        <h1>发起投票</h1>
-        <p><span>标题: </span><input type="text" class="form-control" placeholder="投票标题,不多于32字" name="title"></p>
+        <h1 th:text="${title}"></h1>
+        <p><span th:text="'#'+${voteInfo.id}" id="vote-topic-id"></span></p>
+        <p><span>标题: </span><input type="text" class="form-control" placeholder="投票标题,不多于32字"
+                                   name="title" th:value="${voteInfo}!=null?${voteInfo.topic}:''"></p>
         <p><span>描述：</span>
-            <textarea class="form-control" placeholder="投票描述(内容不多于250字)" rows="3" name="content"></textarea>
+            <textarea class="form-control" placeholder="投票描述(内容不多于250字)" rows="3" name="content"
+                th:text="${voteInfo}!=null?${voteInfo.content}:''"></textarea>
         </p>
         <p><span style="margin-right: 1%;">投票选项类型:</span>
-            单选<input class="form-control" type="radio" name="vote_type" value="single" checked>
-            多选<input class="form-control" type="radio" name="vote_type" value="multi">
+            单选<input class="form-control" type="radio" name="vote_type" value="single"
+                     th:checked="(${voteInfo}!=null)?${!voteInfo.isMulti}:true">
+            多选<input class="form-control" type="radio" name="vote_type" value="multi"
+                     th:checked="(${voteInfo}!=null)?${voteInfo.isMulti}:false">
         </p>
-        <p id="max_count"><span>多选最大数:</span><input class="form-control" name="multi_max_count" type="number" value="2" min="1"/></p>
-        <p><span>开始时间:</span><input type="date" name="start-time" class="form-control"></p>
-        <p><span>结束时间:</span><input type="date" name="end-time" class="form-control"> </p>
+        <p id="max_count" th:style="(${voteInfo}!=null)?((${voteInfo.isMulti})?'display:block':''):''">
+            <span>多选最大数:</span>
+            <input class="form-control" name="multi_max_count" type="number" min="1"
+                    th:value="${voteInfo}!=null?${voteInfo.totalVoteCount}:'2'"/></p>
+        <p><span>开始时间:</span>
+            <input type="datetime-local" name="start-time" class="form-control" th:value="${startTime}"></p>
+        <p><span>结束时间:</span>
+            <input type="datetime-local" name="end-time" class="form-control" th:value="${endTime}"> </p>
         <div class="option-block"><button class="btn btn-success" id="addOption">新增投票选项</button>
             <button class="btn btn-danger" id="delOption">删除投票选项</button></div>
         <div class="vote-block">
-            <p class="vote_option"><span>选项1:</span>
+            <p class="vote_option" th:if="${voteInfo}==null"><span>选项1:</span>
                 <input class="form-control" type="text" name="vote_option"></p>
-            <p class="vote_option"><span>选项2:</span>
+            <p class="vote_option" th:if="${voteInfo}==null"><span>选项2:</span>
                 <input class="form-control" type="text" name="vote_option"></p>
+            <p class="vote_option" th:if="${voteInfo}!=null" th:each="voteOpt,stat:${voteInfo.topicOptionList}">
+                <span th:text="'选项'+${stat.index+1}"></span>
+                <input class="form-control" type="text" name="vote_option" th:value="${voteOpt.name}"></p>
         </div>
         <p><button class="btn btn-success" id="send-vote">发起投票</button></p>
     </div>

@@ -3,14 +3,9 @@ package vote.dao;
 import org.apache.ibatis.session.SqlSession;
 import org.apache.ibatis.session.SqlSessionFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.annotation.Configuration;
 import org.springframework.stereotype.Repository;
-import vote.controller.UserInfoController;
-import vote.domain.DeleteFollowInfo;
-import vote.domain.FollowUser;
-import vote.domain.PrivateUser;
-import vote.domain.User;
-import vote.result.Result;
+import vote.domain.user.*;
+import vote.domain.vote.UserVoteHistory;
 import vote.result.ResultCode;
 
 import java.util.HashMap;
@@ -143,7 +138,7 @@ public class UserDao {
             sqlSession.close();
         }
     }
-    public List<FollowUser> getFollowUserList(int userId,int start,int limit){
+    public List<FollowUser> getFollowUserList(int userId, int start, int limit){
         SqlSession session=factory.openSession();
         try{
             Map<String,Integer> map=new HashMap<>();
@@ -232,4 +227,77 @@ public class UserDao {
             session.close();
         }
     }
+    public List<User> getManagedUser(int start,int limit){
+        SqlSession session=factory.openSession();
+        try{
+            Map<String,Integer> map=new HashMap<>();
+            map.put("start",start);
+            map.put("limit",limit);
+            return session.selectList("getManagedUser",map);
+        }finally {
+            session.close();
+        }
+    }
+    public int getUserManagedCount(){
+        SqlSession session=factory.openSession();
+        try{
+            return session.selectOne("getTotalManagedUser");
+        }finally {
+            session.close();
+        }
+    }
+    public int banUser(User user,int userId){
+        SqlSession session=factory.openSession();
+        try{
+            Map<String,Object> map=new HashMap<>();
+            map.put("account",user.getAccount());
+            map.put("userId",userId);
+            map.put("result",0);
+            session.selectOne("banUser",map);
+            return (int)map.get("result");
+        }finally {
+            session.close();
+        }
+    }
+    public PrivateUser getPrivateUserById(int id){
+        SqlSession session=factory.openSession();
+        try{
+            PrivateUser privateUser=session.selectOne("selectPrivateUserById",id);
+            return privateUser;
+        }finally {
+            session.close();
+        }
+    }
+    public List<UserWithBannedInfo> getBannedUsers(int start, int limit){
+        SqlSession session=factory.openSession();
+        try{
+            Map<String,Integer> map=new HashMap<>();
+            map.put("start",start);
+            map.put("limit",limit);
+            return session.selectList("getBannedUsers",map);
+        }finally {
+            session.close();
+        }
+    }
+    public int getBanUserCount(){
+        SqlSession session=factory.openSession();
+        try{
+            return session.selectOne("getBanUserCount");
+        }finally {
+            session.close();
+        }
+    }
+    public int recoverUser(User user){
+        SqlSession session=factory.openSession();
+        try{
+            Map<String,Integer> map=new HashMap<>();
+            map.put("userId",user.getUserId());
+            map.put("result",0);
+            session.selectOne("recoverUser",map);
+            return map.get("result");
+        }finally {
+            session.close();
+        }
+    }
+
 }

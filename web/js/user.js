@@ -7,6 +7,12 @@ $(function(){
     setOverview();
     setUserInfo();
     setFollowList();
+    setUserManageList();
+    setUserDustbin();
+    setMyVote();
+    setVoteManage();
+    setVoteDustbin();
+    setMyMessage();
 });
 
 function setLeftBlockAnimation(){
@@ -45,7 +51,7 @@ function setOverview(){
 }
 
 function setUserInfo(){
-    if($("#user-info-show").length>0){
+    if($("#userInfo-block").length>0){
         filename=$("#user-info-show > div >img").attr("src");
         filename=filename.substring(filename.lastIndexOf("/")+1);
         console.log(filename);
@@ -59,7 +65,7 @@ function setUserInfo(){
         });
         $("#user-info-edit input[name='username']").on("blur",function(){
             var name=$(this).val();
-            if($.trim(name).length>4){
+            if($.trim(name).length>=4){
                 var data={"username":name,"userId":userId};
                 sendData2Server("/"+$("#web-local").html()+"/user/checkNameExistExceptMe",data,function(json){
                     if(json.resultCode!='SUCCESS'){
@@ -146,7 +152,8 @@ function setUserInfo(){
             })
             console.log(isValid);
             if(sendable){
-                var data={userId:userId,username:$("input[name='username']").val(),sex:$("input[name='sex']:checked").val(),
+                var uid=$("#manage-modify-user-id").length>0?$("#manage-modify-user-id").html():userId;
+                var data={userId:uid,username:$("input[name='username']").val(),sex:$("input[name='sex']:checked").val(),
                     email:$("input[name='email']").val(),phone:$("input[name='phone']").val(),
                     birth:$("input[name='birth']").val(),whatsUp:$("textarea[name='whatsUp']").val(),avatar:filename};
                 var url="/"+$("#web-local").html()+"/user/"+userId+"/updateUserInfo";
@@ -155,8 +162,13 @@ function setUserInfo(){
                         sendData2Server(url,data,function(json){
                             console.log(json);
                             alert(json.resultText);
-                            if(json.resultCode=="SUCCESS")
-                                window.location.reload();
+                            if(json.resultCode=="SUCCESS"){
+                                if($("#manage-return-page").length>0){
+                                    window.location.href="/"+$("#web-local").html()+$("#manage-return-page").html();
+                                }else{
+                                    window.location.reload();
+                                }
+                            }
                         });
                     }else if(json.resultCode=='USERNAME_EXIST'){
                         isValid[0]=false;
@@ -183,10 +195,218 @@ function setUserInfo(){
     }
 }
 
+//关注列表
+function setFollowList(){
+    if($("#followList > table").length>0){
+        $.each($("#followList tr:nth-of-type(n+2) td:nth-of-type(3)"),function(idx,elem){
+            translateTime($(elem));
+        });
+        $.each($("#followList tr:nth-of-type(n+2) td:nth-of-type(4)"),function(idx,elem){
+            translateTime($(elem));
+        });
+        //跳转按钮
+        var url="/"+$("#web-local").html()+"/user/"+userId+"/followList";
+        var preBtn=$("#followList .skip-block button:first-of-type");
+        var nextBtn=$("#followList .skip-block button:last-of-type");
+        var idx=parseInt($("#followList .skip-block span:first-of-type").html());
+        var total=parseInt($("#followList .skip-block span:last-of-type").html());
+        var input=$("#followList .skip-block input[type='number']");
+        var inputBtn=$("#followList .skip-block button:nth-of-type(2)");
+        setSKipButton(preBtn,nextBtn,input,inputBtn,idx,total,url);
+        $.each($("#followList tr:nth-of-type(n+2)"),function(idx,elem){
+            var username=$(elem).find("td:nth-of-type(2)>a").html();
+            var button=$(elem).find("button");
+            button.on("click",function(){
+                var url='/'+$("#web-local").html()+"/user/follow/delete";
+                var data={'followUserName':username,'userId':userId};
+                sendData2Server(url,data,function(json){
+                    if(json.resultCode=='SUCCESS'){
+                        alert("取消关注成功");
+                        window.location='/'+$("#web-local").html()+"/user/"+userId+"/followList";
+                    }else{
+                        alert("服务器出现错误,无法取消关注,即将刷新页面");
+                    }
+                })
+            })
+        })
+    }
+}
+//用户管理列表
+function setUserManageList(){
+    if($(".user-manager").length>0){
+        $.each($(".user-manager tr:nth-of-type(n+2) >td:nth-of-type(4)"),function(idx,elem){
+            translateTime($(elem));
+        });
+        var url="/"+$("#web-local").html()+"/user/manage";
+        var preBtn=$(".user-manager .skip-block button:first-of-type");
+        var nextBtn=$(".user-manager .skip-block button:last-of-type");
+        var idx=parseInt($(".user-manager .skip-block span:first-of-type").html());
+        var total=parseInt($(".user-manager .skip-block span:last-of-type").html());
+        var input=$(".user-manager .skip-block input[type='number']");
+        var inputBtn=$(".user-manager .skip-block button:nth-of-type(2)");
+        setSKipButton(preBtn,nextBtn,input,inputBtn,idx,total,url);
+        $.each($(".user-manager tr:nth-of-type(n+2)"),function(idx,elem){
+            var account=$(elem).find("td:nth-of-type(2)>a").html();
+            var del=$(elem).find("td:nth-of-type(6)>button");
+            var modify=$(elem).find("td:nth-of-type(5)>button");
+            var id=$(elem).find(".user-id-hide").html();
+            del.on("click",function(){
+                var url='/'+$("#web-local").html()+"/user/manage/ban";
+                var data={"account":account};
+                sendData2Server(url,data,function(json){
+                    if(json.resultCode=='SUCCESS'){
+                        alert("封停账户成功");
+                        window.location.reload();
+                    }else{
+                        alert("服务器出现错误,无法封停用户,即将刷新页面");
+                    }
+                })
+            })
+            modify.on("click",function(){
+                window.location.href="/"+$("#web-local").html()+"/user/manage/modify?uid="+id;
+            })
+        })
+    }
+}
+//用户回收箱设置
+function setUserDustbin(){
+    if($("#dustbinUser").length>0){
+        $.each( $("#dustbinUser tr:nth-of-type(n+2)"),function(idx,elem){
+            var time=$(elem).find("td:nth-of-type(4)");
+            var btn=$(elem).find("button");
+            var id=$(elem).find("td:last-of-type").html();
+            translateTimeWithConcrete($(time));
+            btn.on("click",function () {
+                var data={"userId":id};
+                var url="/"+$("#web-local").html()+"/user/dustbinUser/recover";
+                sendData2Server(url,data,function(json){
+                    if(json.resultCode=='SUCCESS'){
+                        alert(json.resultText);
+                        window.location.reload();
+                    }
+                });
+            })
+        });
+        var url="/"+$("#web-local").html()+"/user/dustbinUser";
+        var preBtn=$(".skip-block button:first-of-type");
+        var nextBtn=$(".skip-block button:last-of-type");
+        var idx=parseInt($("#dustbinUser .skip-block span:first-of-type").html());
+        var total=parseInt($("#dustbinUser .skip-block span:last-of-type").html());
+        var input=$(".skip-block input[type='number']");
+        var inputBtn=$(".skip-block button:nth-of-type(2)");
+        setSKipButton(preBtn,nextBtn,input,inputBtn,idx,total,url);
+
+    }
+}
+//我的投票设置
+function setMyVote(){
+    if($(".user-message").length>0){
+        $.each($(".user-message tr:nth-of-type(n+2)"),function(idx,elem){
+            var time=$(elem).find("td:nth-of-type(3)");
+            translateTimeWithConcrete($(time));
+            var modifyBtn=$(elem).find("td:nth-of-type(4) button");
+            var vopticId=$(elem).find("td:nth-of-type(6)").html();
+            var messageId=$(elem).find("td:nth-of-type(7)").html();
+            modifyBtn.on("click",function(){
+                window.location.href="/"+$("#web-local").html()+"/user/voteModify?mes="+messageId+"&topic="+vopticId+"#message-input";
+            })
+        });
+        var url="/"+$("#web-local").html()+"/user/myVotes";
+        var preBtn=$(".skip-block button:first-of-type");
+        var nextBtn=$(".skip-block button:last-of-type");
+        var idx=parseInt($(".user-message .skip-block span:first-of-type").html());
+        var total=parseInt($(".user-message .skip-block span:last-of-type").html());
+        var input=$(".skip-block input[type='number']");
+        var inputBtn=$(".skip-block button:nth-of-type(2)");
+        setSKipButton(preBtn,nextBtn,input,inputBtn,idx,total,url);
+    }
+}
+//我的留言设置
+function setMyMessage(){
+    if($(".user-message").length>0){
+        var url="/"+$("#web-local").html()+"/user/myVoteMessage";
+        var preBtn=$(".skip-block button:first-of-type");
+        var nextBtn=$(".skip-block button:last-of-type");
+        var idx=parseInt($(".user-message .skip-block span:first-of-type").html());
+        var total=parseInt($(".user-message .skip-block span:last-of-type").html());
+        var input=$(".skip-block input[type='number']");
+        var inputBtn=$(".skip-block button:nth-of-type(2)");
+        setSKipButton(preBtn,nextBtn,input,inputBtn,idx,total,url);
+    }
+}
+
+
+//投票管理设置
+function setVoteManage(){
+    if($(".vote-manager").length>0){
+        $.each($(".vote-manager tr:nth-of-type(n+2)"),function(idx,elem){
+            var time=$(elem).find("td:nth-of-type(4)");
+            translateTimeWithConcrete(time);
+            var delBtn=$(elem).find("td:last-of-type button");
+            var modifyBtn=$(elem).find("td:nth-last-of-type(2) button");
+            var voteId=$(elem).find("td:first-of-type").html();
+            voteId=voteId.substring(1);
+            delBtn.on("click",function(){
+                var url='/'+$("#web-local").html()+'/user/voteManage/ban';
+                var data={"id":voteId};
+                sendData2Server(url,data,function(json){
+                    alert(json.resultText);
+                    if(json.resultCode=="SUCCESS"){
+                        window.location.href='/'+$("#web-local").html()+'/user/voteManage'
+                    }
+                })
+            })
+            modifyBtn.on("click",function(){
+                var url='/'+$("#web-local").html()+'/user/voteManage/modify/'+voteId;
+                window.location.href=url;
+            })
+        });
+        var url="/"+$("#web-local").html()+"/user/voteManage";
+        var preBtn=$(".skip-block button:first-of-type");
+        var nextBtn=$(".skip-block button:last-of-type");
+        var idx=parseInt($(".vote-manager .skip-block span:first-of-type").html());
+        var total=parseInt($(".vote-manager .skip-block span:last-of-type").html());
+        var input=$(".skip-block input[type='number']");
+        var inputBtn=$(".skip-block button:nth-of-type(2)");
+        setSKipButton(preBtn,nextBtn,input,inputBtn,idx,total,url);
+
+    }
+}
+//投票回收站设置
+function setVoteDustbin(){
+    if($("#dustbinVote").length>0){
+        $.each($("#dustbinVote tr:nth-of-type(n+2)"),function(idx,elem){
+            var time=$(elem).find("td:nth-of-type(3)");
+            var recoverBtn=$(elem).find("td:nth-of-type(4) button");
+            var voteId=$(elem).find("td:first-of-type").html();
+            voteId=voteId.substring(1);
+            var banId=$(elem).find("td:last-of-type").html();
+            translateTimeWithConcrete(time);
+            recoverBtn.on("click",function(){
+                var url="/"+$("#web-local").html()+"/user/dustbinVote/recover";
+                var data={"banId":banId,"voteId":voteId};
+                sendData2Server(url,data,function(json){
+                    alert(json.resultText);
+                    if(json.resultCode=="SUCCESS")
+                        window.location.href="/"+$("#web-local").html()+"/user/dustbinVote";
+                })
+            })
+        });
+        var url="/"+$("#web-local").html()+"/user/dustbinVote";
+        var preBtn=$(".skip-block button:first-of-type");
+        var nextBtn=$(".skip-block button:last-of-type");
+        var idx=parseInt($("#dustbinVote .skip-block span:first-of-type").html());
+        var total=parseInt($("#dustbinVote .skip-block span:last-of-type").html());
+        var input=$(".skip-block input[type='number']");
+        var inputBtn=$(".skip-block button:nth-of-type(2)");
+        setSKipButton(preBtn,nextBtn,input,inputBtn,idx,total,url);
+    }
+}
+
 function translateTime(ele){
     var text=ele.html();
     if(text!=""){
-        var date=new Date(text);
+        var date=new Date(text+"GMT+0800");
         var dateFormat=date.getFullYear()+"-"+(date.getMonth()>=9?"":"0")+(date.getMonth()+1)+"-"+
             (date.getDate()>=10?"":"0")+date.getDate();
         ele.html(dateFormat);
@@ -237,45 +457,6 @@ function sendData2Server(url,data,func){
         isValid=false;
     });
 }
-
-//关注列表
-function setFollowList(){
-    if($("#followList > table").length>0){
-        $.each($("#followList tr:nth-of-type(n+2) td:nth-of-type(3)"),function(idx,elem){
-            translateTime($(elem));
-        });
-        $.each($("#followList tr:nth-of-type(n+2) td:nth-of-type(4)"),function(idx,elem){
-            translateTime($(elem));
-        });
-        //跳转按钮
-        var url="/"+$("#web-local").html()+"/user/"+userId+"/followList";
-        var preBtn=$("#followList .skip-block button:first-of-type");
-        var nextBtn=$("#followList .skip-block button:last-of-type");
-        var idx=parseInt($("#followList .skip-block span:first-of-type").html());
-        var total=parseInt($("#followList .skip-block span:last-of-type").html());
-        var input=$("#followList .skip-block input[type='number']");
-        var inputBtn=$("#followList .skip-block button:nth-of-type(2)");
-        setSKipButton(preBtn,nextBtn,input,inputBtn,idx,total,url);
-        $.each($("#followList tr:nth-of-type(n+2)"),function(idx,elem){
-            var username=$(elem).find("td:nth-of-type(2)>a").html();
-            var button=$(elem).find("button");
-            button.on("click",function(){
-                var url='/'+$("#web-local").html()+"/user/follow/delete";
-                var data={'followUserName':username,'userId':userId};
-                sendData2Server(url,data,function(json){
-                    if(json.resultCode=='SUCCESS'){
-                        alert("取消关注成功");
-                        window.location.reload();
-                    }else{
-                        alert("服务器出现错误,无法取消关注,即将刷新页面");
-                    }
-                })
-            })
-        })
-    }
-}
-
-
 //跳转按钮设置,直接共用
 function setSKipButton(preBtn,nextBtn,indexInput,indexBtn,index,total,url){
     if(index<=1)
@@ -305,4 +486,17 @@ function skipEvent(idx,total,url){
         window.location.href=url+"?idx="+total;
     else
         window.location.href=url+"?idx="+idx;
+}
+function translateTimeWithConcrete(ele){
+    var text=ele.html();
+    if(text!=""){
+        var date=new Date(text+"GMT+0800");
+        var dateFormat=date.getFullYear()+"-"+(date.getMonth()>=9?"":"0")+(date.getMonth()+1)+"-"+
+            (date.getDate()>=10?"":"0")+date.getUTCDate()+" "+(date.getHours()>=10?"":"0")+date.getHours()+":"+
+            (date.getUTCMinutes()>=10?"":"0")+date.getUTCMinutes()+":"+(date.getUTCSeconds()>=10?"":"0")
+            +date.getUTCSeconds();
+        ele.html(dateFormat);
+    }else{
+        ele.html("无");
+    }
 }

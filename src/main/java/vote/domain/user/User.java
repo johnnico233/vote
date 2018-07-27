@@ -1,6 +1,5 @@
-package vote.domain;
+package vote.domain.user;
 
-import com.fasterxml.jackson.databind.JsonDeserializer;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import vote.config.JsonDateSerializer;

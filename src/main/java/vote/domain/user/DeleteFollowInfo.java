@@ -1,4 +1,4 @@
-package vote.domain;
+package vote.domain.user;
 
 public class DeleteFollowInfo {
     private int userId;

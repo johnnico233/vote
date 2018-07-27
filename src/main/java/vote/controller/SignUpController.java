@@ -7,12 +7,9 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
 import vote.dao.UserDao;
-import vote.domain.PrivateUser;
-import vote.domain.User;
-import vote.result.Result;
+import vote.domain.user.PrivateUser;
+import vote.domain.user.User;
 import vote.result.ResultCode;
-
-import java.util.List;
 
 @Controller
 @RequestMapping("/signUp")

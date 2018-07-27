@@ -2,7 +2,7 @@
 <!DOCTYPE mapper
         PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
         "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
-<mapper namespace="vote.domain.UploadVoteTopic">
+<mapper namespace="vote.domain.vote.UploadVoteTopic">
 
     <select id="addNewVoteTopic" parameterMap="addNewVoteTopicMap" statementType="CALLABLE">
         call addNewTopic(?,?,?,?,?,?,?,?);
@@ -18,14 +18,14 @@
         <parameter property="id" javaType="java.lang.Integer" jdbcType="INTEGER" mode="OUT"/>
     </parameterMap>
 
-    <insert id="addTopicOptions" parameterType="vote.domain.TopicOption">
+    <insert id="addTopicOptions" parameterType="vote.domain.vote.TopicOption">
         insert into vote_item(vote_id,option_name,count) values(#{topicId},#{name},#{count});
     </insert>
 
     <select id="getVoteOptions" resultMap="voteOptionMap">
         select * from vote_item where vote_id = #{id};
     </select>
-    <resultMap id="voteOptionMap" type="vote.domain.TopicOption">
+    <resultMap id="voteOptionMap" type="vote.domain.vote.TopicOption">
         <id property="id" column="item_id"/>
         <result property="topicId" column="vote_id"/>
         <result property="name" column="option_name"/>
@@ -33,7 +33,13 @@
     <select id="getVoteTopic" resultMap="voteTopicMap">
         select * from vote_topic where vote_id = #{id};
     </select>
-    <resultMap id="voteTopicMap" type="vote.domain.VoteTopic">
+    <select id="getVoteTopicList" resultMap="voteTopicMap">
+        select * from vote_topic where usable = #{usable} limit #{start},#{end};
+    </select>
+    <select id="getVoteTopicListSize" resultType="java.lang.Integer">
+        select count(*) from vote_topic where usable = #{usable};
+    </select>
+    <resultMap id="voteTopicMap" type="vote.domain.vote.VoteTopic">
         <id property="id" column="vote_id"/>
         <result property="userId" column="user_id"/>
         <result property="topic" column="vote_topic"/>
@@ -43,9 +49,10 @@
         <result property="isMulti" column="is_multi"/>
         <result property="usable" column="usable"/>
         <result property="totalVoteCount" column="total_vote_count"/>
+        <result property="createTime" column="create_time"/>
     </resultMap>
     
-    <resultMap id="voteMessageMap" type="vote.domain.VoteMessage">
+    <resultMap id="voteMessageMap" type="vote.domain.vote.VoteMessage">
         <id property="id" column="message_id"/>
         <result property="content" column="message_content"/>
         <result property="voteId" column="vote_id"/>
@@ -54,10 +61,11 @@
         <result property="lastLogin" column="last_login_time"/>
         <result property="whatsUp" column="user_whatsup"/>
         <result property="userName" column="user_name"/>
+        <result property="avatar" column="user_avatar"/>
     </resultMap>
 
     <select id="getVoteMessage" resultMap="voteMessageMap" >
-        SELECT v.*,user_name,user_whatsup ,u.user_id,last_login_time,user_name from user_info u,vote_message v
+        SELECT v.*,user_name,user_whatsup ,u.user_id,last_login_time,user_name,user_avatar from user_info u,vote_message v
         where u.user_id = v.user_id and v.vote_id = #{id} limit #{index} ,#{step};
     </select>
 
@@ -86,4 +94,90 @@
         <parameter property="total" javaType="java.lang.Integer" jdbcType="INTEGER" mode="OUT"/>
     </parameterMap>
 
+    <select id="getMyVoteList" parameterType="java.lang.Integer" resultMap="myVoteListMap ">
+        select * from vote_history a left join vote_item b on a.item_id = b.item_id left join vote_topic c
+        on b.vote_id = c.vote_id where a.user_id = #{userId} and a.vote_id in (select t.vote_id from
+        (select distinct vote_id from vote_history order by vote_id asc limit #{start},#{end}) as t)
+    </select>
+    <resultMap id="myVoteListMap" type="vote.domain.vote.UserVoteHistory">
+        <result property="userId" column="user_id"/>
+        <result property="voteName" column="vote_topic"/>
+        <result property="voteId" column="vote_id"/>
+        <result property="optionName" column="option_name"/>
+        <result property="optionId" column="item_id"/>
+        <result property="sendVoteTime" column="send_time"/>
+        <result property="multi" column="is_multi"/>
+        <result property="historyId" column="history_id"/>
+        <result property="startTime" column="start_time"/>
+        <result property="endTime" column="end_time"/>
+    </resultMap>
+    <parameterMap id="myVoteListMap" type="java.util.Map">
+        <parameter property="userId"/>
+        <parameter property="start"/>
+        <parameter property="end"/>
+    </parameterMap>
+    <select id="myVoteListCount" parameterType="java.lang.Integer" resultType="java.lang.Integer">
+        select count(distinct vote_id) from vote_history where user_id = #{userId};
+    </select>
+    <update id="banVoteTopic" parameterType="java.lang.Integer">
+        update vote_topic set usable = 0 where vote_id = #{voteId}
+    </update>
+    <insert id="addBanVoteTopicInfo" parameterType="java.lang.Integer">
+        insert into dustbin(ban_id,ban_type,ban_time) values(#{id},2,now());
+    </insert>
+
+    <parameterMap id="updateVoteTopicMap" type="java.util.Map">
+        <parameter property="topic" javaType="java.lang.String" mode="IN"/>
+        <parameter property="content" javaType="java.lang.String" mode="IN"/>
+        <parameter property="startTime" javaType="java.util.Date" mode="IN"/>
+        <parameter property="endTime" javaType="java.util.Date" mode="IN"/>
+        <parameter property="isMulti" javaType="java.lang.Boolean" mode="IN"/>
+        <parameter property="userId" javaType="java.lang.Integer" mode="IN"/>
+        <parameter property="totalVoteCount" javaType="java.lang.Integer" mode="IN"/>
+        <parameter property="id" javaType="java.lang.Integer" jdbcType="INTEGER" mode="IN"/>
+        <parameter property="result" jdbcType="INTEGER" mode="OUT"/>
+    </parameterMap>
+    <select id="updateVoteTopic" parameterMap="updateVoteTopicMap" statementType="CALLABLE">
+        call updateTopic(?,?,?,?,?,?,?,?,?)
+    </select>
+
+    <resultMap id="BannedVoteTopicMap" type="vote.domain.vote.BannedVoteTopic">
+        <result property="voteName" column="vote_topic"/>
+        <result property="banId" column="ban_id"/>
+        <result property="voteId" column="vote_id"/>
+        <result property="bannedTime" column="ban_time"/>
+    </resultMap>
+    <select id="getBannedVoteTopicList" resultMap="BannedVoteTopicMap">
+        SELECT * FROM vote.dustbin left join vote_topic on ban_id = vote_id where ban_type = 2 limit #{start},#{limit};
+    </select>
+    <select id="getBannedVoteTopicListSize" resultType="java.lang.Integer">
+        SELECT count(*) FROM vote.dustbin where ban_type = 2;
+    </select>
+    <parameterMap id="recoverBanVoteMap" type="java.util.Map">
+        <parameter property="banId"/>
+        <parameter property="topicId"/>
+        <parameter property="result" jdbcType="INTEGER" mode="OUT"/>
+    </parameterMap>
+    <select id="recoverBanVote" parameterMap="recoverBanVoteMap" statementType="CALLABLE">
+        call recoverTopic(?,?,?);
+    </select>
+    <resultMap type="vote.domain.vote.VoteMessage" id="getMyVoteMessage">
+        <result property="id" column="message_id"/>
+        <result property="voteId" column="vote_id"/>
+        <result property="sendTime" column="send_time"/>
+        <result property="voteTitle" column="vote_topic"/>
+        <result property="content" column="message_content"/>
+    </resultMap>
+    <select id="getMyVoteMessages" resultMap="getMyVoteMessage">
+        select * from vote_message v1 left join vote_topic using(vote_id) where v1.user_id = #{id} limit #{start},#{limit};
+    </select>
+    <select id="getMyVoteMessageSize" resultType="java.lang.Integer">
+        select COUNT(*) from vote_message v1 left join vote_topic using(vote_id) where v1.user_id = #{id};
+    </select>
+    <select id="getVoteMessageById" resultType="vote.domain.vote.VoteMessage">
+        select message_id id,message_content content from vote_message where message_id = #{id};
+    </select>
+    <update id="updateVoteMessage">
+        update vote_message set message_content = #{content} where message_id = #{messageId};
+    </update>
 </mapper>

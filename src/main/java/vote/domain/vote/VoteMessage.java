@@ -1,4 +1,4 @@
-package vote.domain;
+package vote.domain.vote;
 
 import java.util.Date;
 
@@ -16,6 +16,8 @@ public class VoteMessage {
     private String userName;
     private String stringLastLogin;
     private String stringSendTime;
+    private String voteTitle;
+    private String avatar;
 
     public VoteMessage(int id, String content, int voteId, Date sendTime, boolean available, int userId, Date lastLogin) {
         this.id = id;
@@ -118,6 +120,22 @@ public class VoteMessage {
         this.stringSendTime = stringSendTime;
     }
 
+    public String getVoteTitle() {
+        return voteTitle;
+    }
+
+    public void setVoteTitle(String voteTitle) {
+        this.voteTitle = voteTitle;
+    }
+
+    public String getAvatar() {
+        return avatar;
+    }
+
+    public void setAvatar(String avatar) {
+        this.avatar = avatar;
+    }
+
     @Override
     public String toString() {
         return "VoteMessage{" +
@@ -132,6 +150,7 @@ public class VoteMessage {
                 ", userName='" + userName + '\'' +
                 ", stringLastLogin='" + stringLastLogin + '\'' +
                 ", stringSendTime='" + stringSendTime + '\'' +
+                ", voteTitle='" + voteTitle + '\'' +
                 '}';
     }
 }

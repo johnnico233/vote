@@ -4,11 +4,11 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
-import vote.domain.TopicOption;
-import vote.domain.VoteMessage;
-import vote.domain.VoteTopicWithOption;
+import vote.domain.vote.VoteMessage;
+import vote.domain.vote.VoteTopicWithOption;
 import vote.result.Result;
 import vote.result.ResultCode;
+import vote.service.UserService;
 import vote.service.VoteService;
 
 import javax.servlet.http.HttpSession;
@@ -19,14 +19,17 @@ import java.util.List;
 public class VoteSubjectController {
     @Autowired
     private VoteService voteService;
+    @Autowired
+    private UserService userService;
 
     @RequestMapping(value = "/{topicId}",method = RequestMethod.GET)
     public String getUrl(HttpSession httpSession, Model model, @PathVariable int topicId, @RequestParam(required = false) String idx){
-        VoteTopicWithOption voteTopic=voteService.getVoteInformation(topicId,model);
+        VoteTopicWithOption voteTopic=voteService.getVoteInformation(topicId,model,false);
         if(voteTopic!=null){
             int index=idx==null?1:(isNumber(idx)?Integer.valueOf(idx):1);
             voteService.getVoteMessages(model,topicId,index,5);
             model.addAttribute("index",index);
+            model.addAttribute("topicUser",userService.getUserOverviewInfo(voteTopic.getUserId()));
             model.addAttribute("step",5);
             System.out.println(voteTopic);
             return "voteSubject";
