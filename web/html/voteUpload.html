@@ -12,7 +12,7 @@
     <p id="web-local" th:text="${local}" style="display: none;"></p>
     <div class="main-container">
         <h1 th:text="${title}"></h1>
-        <p><span th:text="'#'+${voteInfo.id}" id="vote-topic-id"></span></p>
+        <p th:if="${voteInfo}!=null"><span th:text="'#'+${voteInfo.id}" id="vote-topic-id"></span></p>
         <p><span>标题: </span><input type="text" class="form-control" placeholder="投票标题,不多于32字"
                                    name="title" th:value="${voteInfo}!=null?${voteInfo.topic}:''"></p>
         <p><span>描述：</span>
@@ -35,12 +35,14 @@
             <input type="datetime-local" name="end-time" class="form-control" th:value="${endTime}"> </p>
         <div class="option-block"><button class="btn btn-success" id="addOption">新增投票选项</button>
             <button class="btn btn-danger" id="delOption">删除投票选项</button></div>
-        <div class="vote-block">
+        <div class="vote-block" th:if="${voteInfo}==null">
             <p class="vote_option" th:if="${voteInfo}==null"><span>选项1:</span>
                 <input class="form-control" type="text" name="vote_option"></p>
             <p class="vote_option" th:if="${voteInfo}==null"><span>选项2:</span>
                 <input class="form-control" type="text" name="vote_option"></p>
-            <p class="vote_option" th:if="${voteInfo}!=null" th:each="voteOpt,stat:${voteInfo.topicOptionList}">
+        </div>
+        <div class="vote-block" th:if="${voteInfo}!=null">
+            <p class="vote_option" th:each="voteOpt,stat:${voteInfo.topicOptionList}">
                 <span th:text="'选项'+${stat.index+1}"></span>
                 <input class="form-control" type="text" name="vote_option" th:value="${voteOpt.name}"></p>
         </div>

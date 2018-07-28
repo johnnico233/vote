@@ -6,15 +6,19 @@
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
     <link th:href="'/'+${local}+'/css/core/bootstrap.min.css'" rel="stylesheet">
     <link th:href="'/'+${local}+'/css/voteSubject.css'" rel="stylesheet">
+    <link th:href="'/'+${local}+'/css/header.css'" rel="stylesheet">
 </head>
 <body>
+    <div th:include="~{header::vote-header}"></div>
     <p th:text="${local}" id="web-local" style="display:none;"></p>
     <p th:text="${vote.id}" id="topicId" style="display:none;"></p>
+    <p th:if="${userID}!=null" th:text="${userID}" id="userID" style="display:none;"></p>
+    <p th:if="${returnPage}!=null" th:id="returnPage" style="display: none"></p>
     <table>
         <tr>
             <td class="left-block">
                 <img th:src="'/'+${local}+'/avatar/'+${topicUser.avatar}">
-                <p th:text="${userInfo.username}"></p>
+                <p><a th:text="${userInfo.username}" th:href="'/'+${local}+'/user/'+${userInfo.userId}" style="color:#fff;"></a></p>
                 <p th:text="${userInfo.whatsUp}"></p>
                 <p>上次登录时间:</p>
                 <p th:text="${lastLogin}"></p>
@@ -46,7 +50,7 @@
         <tr th:each="voteMessage ,stats: ${voteMessages}">
             <td class="left-block" th:if="${voteMessage.available}">
                 <img th:src="'/'+${local}+'/avatar/'+${voteMessage.avatar}">
-                <p th:text="${voteMessage.userName}">用户名</p>
+                <p><a th:text="${voteMessage.userName}" th:href="'/'+${local}+'/user/'+${voteMessage.userId}" style="color:#fff;"></a></p>
                 <p th:text="${voteMessage.whatsUp}">whatsUp</p>
                 <p>上次登录时间:</p>
                 <p th:text="${voteMessage.stringLastLogin}">Last login time</p>
@@ -84,5 +88,6 @@
     <script th:src="'/'+${local}+'/js/core/popper.min.js'"></script>
     <script th:src="'/'+${local}+'/js/core/bootstrap.js'"></script>
     <script th:src="'/'+${local}+'/js/voteSubject.js'"></script>
+    <script th:src="'/'+${local}+'/js/header.js'"></script>
 </body>
 </html>

@@ -4,20 +4,20 @@ import java.util.Date;
 
 public class VoteMessage {
     //用于数据库存储的数据
-    private int id;
-    private String content;
-    private int voteId;
-    private Date sendTime;
-    private boolean available;
-    private int userId;
+    protected int id;
+    protected String content;
+    protected int voteId;
+    protected Date sendTime;
+    protected boolean available;
+    protected int userId;
     //用于网页显示的数据
-    private Date lastLogin;
-    private String whatsUp;
-    private String userName;
-    private String stringLastLogin;
-    private String stringSendTime;
-    private String voteTitle;
-    private String avatar;
+    protected Date lastLogin;
+    protected String whatsUp;
+    protected String userName;
+    protected String stringLastLogin;
+    protected String stringSendTime;
+    protected String voteTitle;
+    protected String avatar;
 
     public VoteMessage(int id, String content, int voteId, Date sendTime, boolean available, int userId, Date lastLogin) {
         this.id = id;

@@ -18,6 +18,10 @@
         <filter-name>loginFilter</filter-name>
         <url-pattern>/user/*</url-pattern>
     </filter-mapping>
+    <filter-mapping>
+        <filter-name>loginFilter</filter-name>
+        <url-pattern>/voteUpload/*</url-pattern>
+    </filter-mapping>
     <servlet>
         <servlet-name>app</servlet-name>
         <servlet-class>org.springframework.web.servlet.DispatcherServlet</servlet-class>

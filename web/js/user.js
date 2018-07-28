@@ -13,6 +13,8 @@ $(function(){
     setVoteManage();
     setVoteDustbin();
     setMyMessage();
+    setVoteMessageManage();
+    setMessageDustbin();
 });
 
 function setLeftBlockAnimation(){
@@ -46,6 +48,9 @@ function setOverview(){
         translateTime($("#overview-lastlogin"));
         $.each($(".overview-block>.overview-follow tr td:nth-of-type(n+3)"),function(idx,ele){
             translateTime($(ele))
+        });
+        $(".overview-follow button").on("click",function () {
+            window.location.href='/'+$("#web-local").html()+'/user/'+userId+'/followList';
         })
     }
 }
@@ -256,9 +261,10 @@ function setUserManageList(){
                 sendData2Server(url,data,function(json){
                     if(json.resultCode=='SUCCESS'){
                         alert("封停账户成功");
-                        window.location.reload();
+                        window.location.href='/'+$("#web-local").html()+"/user/manage";
                     }else{
                         alert("服务器出现错误,无法封停用户,即将刷新页面");
+                        window.location.reload();
                     }
                 })
             })
@@ -300,22 +306,12 @@ function setUserDustbin(){
 }
 //我的投票设置
 function setMyVote(){
-    if($(".user-message").length>0){
-        $.each($(".user-message tr:nth-of-type(n+2)"),function(idx,elem){
-            var time=$(elem).find("td:nth-of-type(3)");
-            translateTimeWithConcrete($(time));
-            var modifyBtn=$(elem).find("td:nth-of-type(4) button");
-            var vopticId=$(elem).find("td:nth-of-type(6)").html();
-            var messageId=$(elem).find("td:nth-of-type(7)").html();
-            modifyBtn.on("click",function(){
-                window.location.href="/"+$("#web-local").html()+"/user/voteModify?mes="+messageId+"&topic="+vopticId+"#message-input";
-            })
-        });
+    if($(".user-vote-manager").length>0){
         var url="/"+$("#web-local").html()+"/user/myVotes";
         var preBtn=$(".skip-block button:first-of-type");
         var nextBtn=$(".skip-block button:last-of-type");
-        var idx=parseInt($(".user-message .skip-block span:first-of-type").html());
-        var total=parseInt($(".user-message .skip-block span:last-of-type").html());
+        var idx=parseInt($(".user-vote-manager .skip-block span:first-of-type").html());
+        var total=parseInt($(".user-vote-manager .skip-block span:last-of-type").html());
         var input=$(".skip-block input[type='number']");
         var inputBtn=$(".skip-block button:nth-of-type(2)");
         setSKipButton(preBtn,nextBtn,input,inputBtn,idx,total,url);
@@ -324,6 +320,27 @@ function setMyVote(){
 //我的留言设置
 function setMyMessage(){
     if($(".user-message").length>0){
+        $.each($(".user-message tr:nth-of-type(n+2)"),function(idx,elem){
+            var time=$(elem).find("td:nth-of-type(3)");
+            translateTimeWithConcrete($(time));
+            var modifyBtn=$(elem).find("td:nth-of-type(4) button");
+            var delBtn=$(elem).find("td:nth-of-type(5) button");
+            var topicId=$(elem).find("td:nth-of-type(6)").html();
+            var messageId=$(elem).find("td:nth-of-type(7)").html();
+            modifyBtn.on("click",function(){
+                window.location.href="/"+$("#web-local").html()+"/user/voteModify?mes="+messageId+"&topic="+topicId+"#message-input";
+            })
+            delBtn.on("click",function(){
+                console.log(messageId);
+                var url="/"+$("#web-local").html()+"/user/delVoteMessage";
+                var data={"id":messageId,"userId":userId}
+                sendData2Server(url,data,function(json){
+                    alert(json.resultText);
+                    if(json.resultCode=='SUCCESS')
+                        window.location.href="/"+$("#web-local").html()+"/user/myVoteMessage";
+                })
+            })
+        });
         var url="/"+$("#web-local").html()+"/user/myVoteMessage";
         var preBtn=$(".skip-block button:first-of-type");
         var nextBtn=$(".skip-block button:last-of-type");
@@ -372,6 +389,41 @@ function setVoteManage(){
 
     }
 }
+//投票留言设置
+function setVoteMessageManage(){
+    if($(".message-manager").length>0){
+        $.each($(".message-manager tr:nth-of-type(n+2)"),function(idx,elem){
+            var time=$(elem).find("td:nth-of-type(4)");
+            translateTimeWithConcrete(time);
+            var delBtn=$(elem).find("td:nth-last-of-type(4) button");
+            var modifyBtn=$(elem).find("td:nth-last-of-type(3) button");
+            var messageId=$(elem).find("td:last-of-type").html();
+            var voteId=$(elem).find("td:nth-last-of-type(2)").html();
+            modifyBtn.on("click",function(){
+                window.location.href="/"+$("#web-local").html()+"/user/voteModify?mes="+messageId+"&topic="+voteId+
+                    "&return=manage#message-input";
+            })
+            delBtn.on("click",function(){
+                console.log(messageId);
+                var url="/"+$("#web-local").html()+"/user/delVoteMessage";
+                var data={"id":messageId,"userId":userId}
+                sendData2Server(url,data,function(json){
+                    alert(json.resultText);
+                    if(json.resultCode=='SUCCESS')
+                        window.location.href="/"+$("#web-local").html()+"/user/voteMessageManage";
+                })
+            })
+        });
+        var url="/"+$("#web-local").html()+"/user/voteMessageManage";
+        var preBtn=$(".skip-block button:first-of-type");
+        var nextBtn=$(".skip-block button:last-of-type");
+        var idx=parseInt($(".message-manager .skip-block span:first-of-type").html());
+        var total=parseInt($(".message-manager .skip-block span:last-of-type").html());
+        var input=$(".skip-block input[type='number']");
+        var inputBtn=$(".skip-block button:nth-of-type(2)");
+        setSKipButton(preBtn,nextBtn,input,inputBtn,idx,total,url);
+    }
+}
 //投票回收站设置
 function setVoteDustbin(){
     if($("#dustbinVote").length>0){
@@ -400,6 +452,43 @@ function setVoteDustbin(){
         var input=$(".skip-block input[type='number']");
         var inputBtn=$(".skip-block button:nth-of-type(2)");
         setSKipButton(preBtn,nextBtn,input,inputBtn,idx,total,url);
+    }
+}
+//留言回收站信息
+function setMessageDustbin(){
+    if($("#messageDustbin").length>0){
+        var url="/"+$("#web-local").html()+"/user/dustbinVoteMessage";
+        var preBtn=$(".skip-block button:first-of-type");
+        var nextBtn=$(".skip-block button:last-of-type");
+        var idx=parseInt($("#messageDustbin .skip-block span:first-of-type").html());
+        var total=parseInt($("#messageDustbin .skip-block span:last-of-type").html());
+        var input=$(".skip-block input[type='number']");
+        var inputBtn=$(".skip-block button:nth-of-type(2)");
+        setSKipButton(preBtn,nextBtn,input,inputBtn,idx,total,url);
+        $.each($("#messageDustbin tr:nth-of-type(n+2)"),function(idx,elem){
+            var recvBtn=$(elem).find("td:nth-of-type(5)");
+            var delBtn=$(elem).find("td:nth-of-type(6)");
+            var banId=$(elem).find("td:nth-last-of-type(2)").html();
+            var messageId=$(elem).find("td:last-of-type").html();
+            recvBtn.on("click",function(){
+                var data={'banId':banId,'id':messageId,'userId':userId};
+                var url='/'+$("#web-local").html()+"/user/dustbinVoteMessage/recover";
+                sendData2Server(url,data,function(json){
+                    alert(json.resultText);
+                    if(json.resultCode=='SUCCESS')
+                        window.location.href='/'+$("#web-local").html()+'/user/dustbinVoteMessage';
+                });
+            })
+            delBtn.on("click",function () {
+                var data={'banId':banId,'id':messageId,'userId':userId};
+                var url='/'+$("#web-local").html()+"/user/dustbinVoteMessage/delete";
+                sendData2Server(url,data,function(json){
+                    alert(json.resultText);
+                    if(json.resultCode=='SUCCESS')
+                        window.location.href='/'+$("#web-local").html()+'/user/dustbinVoteMessage';
+                });
+            })
+        });
     }
 }
 

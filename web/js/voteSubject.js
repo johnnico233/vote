@@ -89,6 +89,18 @@ function voteUpload(){
 }
 //发表留言事件触发,需要修改userId
 function uploadMessage(){
+    var userId=-1;
+    if($("#userID").length>0)
+        userId=$("#userID").html();
+    var url="/"+$("#web-local").html()+"/voteSubject/sendVoteMessage";
+    var skipUrl="/"+$("#web-local").html()+"/voteSubject/"+$("#topicId").html();
+    if($("#message-id").length>0){
+        url="/"+$("#web-local").html()+"/voteSubject/updateVoteMessage";
+        if($("#returnPage").length>0)
+            skipUrl="/"+$("#web-local").html()+"/user/voteMessageManage";
+        else
+            skipUrl="/"+$("#web-local").html()+"/user/myVoteMessage";
+    }
     $(".send-message >textarea").on(
         {"keydown":function(){
             setSendButtonValid();
@@ -97,17 +109,21 @@ function uploadMessage(){
         }
         });
     $("#send-message-btn").on("click",function(){
+        console.log("userId");
         var content=$.trim($(".send-message >textarea").val());
-        var url="/"+$("#web-local").html()+"/voteSubject/sendVoteMessage";
-        var skipUrl="/"+$("#web-local").html()+"/voteSubject/"+$("#topicId").html();
-        sendData2Server(url,{content:content,voteId:$("#topicId").html(),userId:2},false,skipUrl);
+        var data={"content":content,"voteId":$("#topicId").html(),"userId":userId};
+        if($("#message-id").length>0)
+            data['id']=parseInt($("#message-id").html());
+        console.log(data);
+        sendData2Server(url,data,false,skipUrl);
     })
     $(".send-message >textarea").on("keydown",function(e){
         if(e.ctrlKey&&e.keyCode==13){
             var content=$.trim($(".send-message >textarea").val());
-            var url="/"+$("#web-local").html()+"/voteSubject/sendVoteMessage";
-            var skipUrl="/"+$("#web-local").html()+"/voteSubject/"+$("#topicId").html();
-            sendData2Server(url,{content:content,voteId:$("#topicId").html(),userId:2},false,skipUrl);
+            var data={"content":content,"voteId":$("#topicId").html(),"userId":userId};
+            if($("#message-id").length>0)
+                data['id']=parseInt($("#message-id").html());
+            sendData2Server(url,data,false,skipUrl);
         }
     })
 }
@@ -130,16 +146,22 @@ function sendData2Server(url,data,isReload,skipUrl){
     }).done(function(json){
         console.log(json);
         if(isReload){
-            if(json.resultCode=='SUCCESS'){
+            if(json.resultCode=='SUCCESS') {
                 alert(json.resultText);
                 window.location.reload();
             }
         }
         else{
+            if(json.resultCode!=undefined)
+                if(json.resultCode=='SUCCESS'){
+                alert(json.resultText);
+                window.location.href=skipUrl;
+            }
             if(json.result.resultCode=='SUCCESS'){
                 alert(json.result.resultText);
                 window.location.href=skipUrl+"?idx="+json.idx;
             }
+
         }
     }).fail(function(xhr,status,errorThrown){
         alert("there is something wrong with server");

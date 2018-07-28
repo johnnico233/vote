@@ -15,7 +15,8 @@ $(function(){
                 $(".input-hint").css("display","block");
                 $(".input-hint").html(json.resultText);
             }else{
-                alert("登录成功")
+                alert("登录成功");
+                window.location.reload();
             }
         }).fail(function(xhr,status,errorThrown){
             alert("there is something wrong with server");

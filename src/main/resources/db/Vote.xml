@@ -167,12 +167,16 @@
         <result property="sendTime" column="send_time"/>
         <result property="voteTitle" column="vote_topic"/>
         <result property="content" column="message_content"/>
+        <result property="userName" column="user_name"/>
+        <result property="userId" column="user_id"/>
     </resultMap>
     <select id="getMyVoteMessages" resultMap="getMyVoteMessage">
-        select * from vote_message v1 left join vote_topic using(vote_id) where v1.user_id = #{id} limit #{start},#{limit};
+        select * from vote_message v1 left join vote_topic using(vote_id) where v1.user_id = #{id} and available = true
+        limit #{start},#{limit};
     </select>
     <select id="getMyVoteMessageSize" resultType="java.lang.Integer">
-        select COUNT(*) from vote_message v1 left join vote_topic using(vote_id) where v1.user_id = #{id};
+        select COUNT(*) from vote_message v1 left join vote_topic using(vote_id) where v1.user_id = #{id}
+        and available = true;
     </select>
     <select id="getVoteMessageById" resultType="vote.domain.vote.VoteMessage">
         select message_id id,message_content content from vote_message where message_id = #{id};
@@ -180,4 +184,59 @@
     <update id="updateVoteMessage">
         update vote_message set message_content = #{content} where message_id = #{messageId};
     </update>
+    <parameterMap id="banVoteMessageMap" type="java.util.Map">
+        <parameter property="id" mode="IN"/>
+        <parameter property="result" mode="OUT" jdbcType="INTEGER"/>
+    </parameterMap>
+    <select id="banVoteMessage" parameterMap="banVoteMessageMap" statementType="CALLABLE">
+        call deleteVoteMessage(?,?);
+    </select>
+    <select id="getAllVoteMessages" resultMap="getMyVoteMessage">
+        select v1.*,v2.*,u1.user_name from vote_message v1 left join vote_topic v2 using(vote_id) left join user_info u1
+        on v1.user_id = u1.user_id where available = true limit #{start},#{limit};
+    </select>
+    <select id="getAllVoteMessageSize" resultType="java.lang.Integer">
+        select COUNT(*) from vote_message v1 left join vote_topic using(vote_id) where available = true;
+    </select>
+    <resultMap id="banVoteMessageMap" type="java.util.Map">
+        <result property="id" column="ban_id"/>
+        <result property="voteTitle" column="vote_topic"/>
+        <result property="userName" column="user_name"/>
+        <result property="content" column="message_content"/>
+        <result property="sendTime" column="send_time"/>
+        <result property="banTime" column="ban_time"/>
+        <result property="banId" column="id"/>
+    </resultMap>
+    <parameterMap id="recoverMessageMap" type="java.util.Map">
+        <parameter property="banId" mode="IN"/>
+        <parameter property="messageId" mode="IN"/>
+        <parameter property="result" mode="OUT" jdbcType="INTEGER"/>
+    </parameterMap>
+    <select id="recoverVoteMessage" parameterMap="recoverMessageMap" statementType="CALLABLE">
+        call recoverMessage(?,?,?);
+    </select>
+    <select id="delVoteMessage" parameterMap="recoverMessageMap" statementType="CALLABLE">
+        call delVoteMessage(?,?,?);
+    </select>
+    <!--针对管理员对所有封禁的留言显示,恢复和删除-->
+    <select id="getBanVoteMessageList" resultMap="banVoteMessageMap">
+        select b.*,v.*,u.user_name,v1.vote_topic from dustbin b left join vote_message v on v.message_id = b.ban_id
+        left join user_info u on u.user_id = v.user_id left join vote_topic v1 on v.vote_id =
+        v1.vote_id where b.ban_type=3 limit #{start},#{limit};
+    </select>
+    <select id="getBanVoteMessageSize" resultType="java.lang.Integer">
+        select count(*) from dustbin b where b.ban_type=3 ;
+    </select>
+
+    <!--针对普通用户对自己的封禁的留言显示,删除和恢复-->
+    <select id="getBanVoteMessageListById" resultMap="banVoteMessageMap">
+        select b.*,v.*,u.user_name,v1.vote_topic from dustbin b left join vote_message v on v.message_id = b.ban_id
+        left join user_info u on u.user_id = v.user_id left join vote_topic v1 on v.vote_id =
+        v1.vote_id where b.ban_type=3 and v.user_id = #{id} limit #{start},#{limit};
+    </select>
+    <select id="getBanVoteMessageSizeById" resultType="java.lang.Integer">
+        select count(*) from dustbin b left join vote_message v on ban_id = v.message_id
+        where b.ban_type=3 and v.user_id = #{id} ;
+    </select>
+    
 </mapper>

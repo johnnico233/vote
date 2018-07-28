@@ -43,18 +43,22 @@ public class VoteSubjectController {
     }
     @RequestMapping(value = "/sendVote",method = RequestMethod.POST)
     public @ResponseBody Result sendVoteItem(@RequestBody UserVote userVote){
-        System.out.println(userVote);
         ResultCode resultCode=voteService.addNewVoteHistoryAndCount(userVote);
         return new Result(resultCode,"投票成功");
     }
     @RequestMapping(value="/sendVoteMessage",method = RequestMethod.POST)
     public @ResponseBody ResultWithIndex sendVoteMessage(@RequestBody VoteMessage voteMessage){
-        System.out.println(voteMessage);
         int total=voteService.addNewVoteMessage(voteMessage);
         boolean result=total!=-1;
         return new ResultWithIndex(Integer.valueOf(((total-1)/5))+1,new Result(
                 result?ResultCode.SUCCESS:ResultCode.FAILED,result?"留言成功":"留言失败,请联系系统管理员"));
     }
+    @RequestMapping(value="/updateVoteMessage",method = RequestMethod.POST)
+    public @ResponseBody Result updateVoteMessage(@RequestBody VoteMessage voteMessage){
+        ResultCode code=voteService.updateVoteMessage(voteMessage);
+        return new Result(code,code==ResultCode.SUCCESS?"更新成功":"更新失败");
+    }
+
 
     public boolean isNumber(String str){
         char[] sequence=str.toCharArray();

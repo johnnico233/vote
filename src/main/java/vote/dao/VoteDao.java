@@ -240,6 +240,25 @@ public class VoteDao {
             session.close();
         }
     }
+    public int getAllVoteMessageSize(){
+        SqlSession session=factory.openSession();
+        try{
+            return session.selectOne("getAllVoteMessageSize");
+        }finally {
+            session.close();
+        }
+    }
+    public List<VoteMessage> getAllVoteMessageList(int start,int limit){
+        SqlSession session=factory.openSession();
+        try{
+            Map<String,Integer> map=new HashMap<>();
+            map.put("start",start);
+            map.put("limit",limit);
+            return session.selectList("getAllVoteMessages",map);
+        }finally {
+            session.close();
+        }
+    }
     public VoteMessage getVoteMessageById(int messageId){
         SqlSession session=factory.openSession();
         try{
@@ -248,6 +267,7 @@ public class VoteDao {
             session.close();
         }
     }
+
     public int updateVoteMessageById(VoteMessage voteMessage){
         SqlSession session=factory.openSession();
         try{
@@ -257,6 +277,83 @@ public class VoteDao {
             int result=session.update("updateVoteMessage",map);
             session.commit();
             return result;
+        }finally {
+            session.close();
+        }
+    }
+    public int banVoteMessage(VoteMessage voteMessage){
+        SqlSession session=factory.openSession();
+        try{
+            Map<String,Integer> map=new HashMap<>();
+            map.put("id",voteMessage.getId());
+            map.put("result",0);
+            session.selectOne("banVoteMessage",map);
+            return map.get("result");
+        }finally {
+            session.close();
+        }
+    }
+    public List<BannedVoteMessage> getBannedVoteMessageList(int start,int limit){
+        SqlSession session=factory.openSession();
+        try{
+            Map<String,Integer> map=new HashMap<>();
+            map.put("start",start);
+            map.put("limit",limit);
+            return session.selectList("getBanVoteMessageList",map);
+        }finally {
+            session.close();
+        }
+    }
+    public int getBannedVoteMessageSize(){
+        SqlSession session=factory.openSession();
+        try{
+            return session.selectOne("getBanVoteMessageSize");
+        }finally {
+            session.close();
+        }
+    }
+    public int recoverVoteMessage(BannedVoteMessage bannedVoteMessage){
+        SqlSession session=factory.openSession();
+        try{
+            Map<String,Integer> map=new HashMap<>();
+            map.put("banId",bannedVoteMessage.getBanId());
+            map.put("messageId",bannedVoteMessage.getId());
+            map.put("result",0);
+            session.selectOne("recoverVoteMessage",map);
+            return map.get("result");
+        }finally {
+            session.close();
+        }
+    }
+    public int delVoteMessage(BannedVoteMessage bannedVoteMessage){
+        SqlSession session=factory.openSession();
+        try{
+            Map<String,Integer> map=new HashMap<>();
+            map.put("banId",bannedVoteMessage.getBanId());
+            map.put("messageId",bannedVoteMessage.getId());
+            map.put("result",0);
+            session.selectOne("delVoteMessage",map);
+            return map.get("result");
+        }finally {
+            session.close();
+        }
+    }
+    public List<BannedVoteMessage> getBannedVoteMessageListById(int userId,int start,int limit){
+        SqlSession session=factory.openSession();
+        try{
+            Map<String,Integer> map=new HashMap<>();
+            map.put("start",start);
+            map.put("limit",limit);
+            map.put("id",userId);
+            return session.selectList("getBanVoteMessageListById",map);
+        }finally {
+            session.close();
+        }
+    }
+    public int getBannedVoteMessageSizeById(int userId){
+        SqlSession session=factory.openSession();
+        try{
+            return session.selectOne("getBanVoteMessageSizeById",userId);
         }finally {
             session.close();
         }

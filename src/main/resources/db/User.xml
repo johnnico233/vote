@@ -136,7 +136,7 @@
     </select>
 
     <select id="getBannedUsers" resultMap="bannedUserInfoMap">
-        select * from dustbin a left join user on user_id = ban_id left join user_info b on ban_id = b.user_id
+        select * from dustbin a left join user on user_id = ban_id left join user_info b on ban_id = b.user_id where ban_type=1
         limit #{start} ,#{limit};
     </select>
     <resultMap id="bannedUserInfoMap" type="vote.domain.user.UserWithBannedInfo">

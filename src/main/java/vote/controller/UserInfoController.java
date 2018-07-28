@@ -9,15 +9,15 @@ import vote.domain.user.DeleteFollowInfo;
 import vote.domain.user.FollowUser;
 import vote.domain.user.User;
 import vote.domain.user.UserWithBannedInfo;
-import vote.domain.vote.BannedVoteTopic;
-import vote.domain.vote.VoteMessage;
-import vote.domain.vote.VoteTopic;
-import vote.domain.vote.VoteTopicWithOption;
+import vote.domain.vote.*;
 import vote.result.Result;
 import vote.result.ResultCode;
 import vote.service.UserService;
 import vote.service.VoteService;
 
+import javax.servlet.http.Cookie;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 import java.io.*;
 import java.util.Date;
@@ -114,7 +114,6 @@ public class UserInfoController {
     @RequestMapping(value = "/checkPhoneExistExceptMe", method = RequestMethod.POST)
     public @ResponseBody
     Result checkPhoneExistExceptMe(@RequestBody User user) {
-        System.out.println(user);
         ResultCode code = userService.checkPhoneNotExistExceptMe(user) ? ResultCode.SUCCESS : ResultCode.PHONE_EXIST;
         return new Result(code, code == ResultCode.SUCCESS ? "" : "电话号码已存在");
     }
@@ -122,7 +121,6 @@ public class UserInfoController {
     @RequestMapping(value = "/checkEmailExistExceptMe", method = RequestMethod.POST)
     public @ResponseBody
     Result checkEmailExistExceptMe(@RequestBody User user) {
-        System.out.println(user);
         ResultCode code = userService.checkEmailNotExistExceptMe(user) ? ResultCode.SUCCESS : ResultCode.EMAIL_EXIST;
         return new Result(code, code == ResultCode.SUCCESS ? "" : "Email已存在");
     }
@@ -219,9 +217,10 @@ public class UserInfoController {
             index=Integer.valueOf(idx);
         int userId=(int)httpSession.getAttribute("userID");
         List<UserWithBannedInfo> bannedInfos=userService.getBannedUsers(Integer.valueOf((index-1)*5),5,userId);
+        System.out.println(bannedInfos);
         if(bannedInfos!=null){
             model.addAttribute("userList",bannedInfos);
-            model.addAttribute("title","回收站");
+            model.addAttribute("title","封停用户回收站");
             model.addAttribute("infoType","dustbinUser");
             model.addAttribute("index",index);
             model.addAttribute("total",userService.getBannedUserCount(5));
@@ -313,7 +312,7 @@ public class UserInfoController {
         if(idx!=null)
             index=Integer.valueOf(idx);
         if(valid){
-            model.addAttribute("title","回收站");
+            model.addAttribute("title","投票回收站");
             model.addAttribute("bannedList",voteService.getBannedVoteList(index,5));
             model.addAttribute("index",index);
             model.addAttribute("total",voteService.getBannedVoteListCount(5));
@@ -350,7 +349,8 @@ public class UserInfoController {
     }
     @RequestMapping("/voteModify")
     public String modifyVoteMessage(HttpSession httpSession,Model model,@RequestParam(value = "mes") String messageId,
-                                    @RequestParam(value = "topic") String topicId){
+                                    @RequestParam(value = "topic") String topicId,
+                                    @RequestParam(required = false,value = "return") String returnPage){
         int userId=(int)httpSession.getAttribute("userID");
         boolean valid=userService.checkUserValid(userId);
         if(!valid){
@@ -364,12 +364,98 @@ public class UserInfoController {
                 model.addAttribute("topicUser",userService.getUserOverviewInfo(userId));
                 model.addAttribute("step",5);
                 VoteMessage voteMessage=voteService.getVoteMessageById(Integer.valueOf(messageId));
-                System.out.println(voteMessage);
                 model.addAttribute("myVoteMessage",voteMessage);
+                if(returnPage!=null)
+                    model.addAttribute("returnPage",true);
                 return "voteSubject";
             }else{
                 return "home";
             }
         }
+    }
+    @RequestMapping(value = "/delVoteMessage",method = RequestMethod.POST)
+    public @ResponseBody Result banVoteMessage(@RequestBody VoteMessage voteMessage){
+        ResultCode code=voteService.banVoteMessage(voteMessage);
+        return new Result(code,code==ResultCode.SUCCESS?"删除成功":"删除失败");
+    }
+    @RequestMapping(value="/voteMessageManage")
+    public String getAllVoteMessages(HttpSession httpSession,Model model,@RequestParam(required = false) String idx){
+        int userId=(int)httpSession.getAttribute("userID");
+        boolean isValid = userService.checkUserValid(userId);
+        if(!isValid){
+            //非法操作
+            return "home";
+        }else{
+            int index=1;
+            int step=10;
+            if(idx!=null)
+                index=Integer.valueOf(idx);
+            model.addAttribute("infoType","voteMessageManage");
+            model.addAttribute("title","留言管理");
+            model.addAttribute("index",index);
+            List<VoteMessage> voteMessages=voteService.getAllVoteMessageList(index,step);
+            System.out.println(voteMessages);
+            model.addAttribute("voteMessageList",voteMessages);
+            model.addAttribute("total",voteService.getAllVoteMessageSize(step));
+            return "user";
+        }
+    }
+    @RequestMapping(value="/dustbinVoteMessage")
+    public String getDustbinVoteMessage(HttpSession httpSession,Model model,@RequestParam(required = false) String idx){
+        int userId=(int)httpSession.getAttribute("userID");
+        boolean isAdmin=userService.checkUserValid(userId);
+        int index=1;
+        int limit=10;
+        if(idx!=null)
+            index=Integer.valueOf(idx);
+        model.addAttribute("title","留言回收站");
+        model.addAttribute("index",index);
+        model.addAttribute("infoType","messageDustbin");
+        if(isAdmin){
+            model.addAttribute("BannedVoteMessage",voteService.getBannedVoteMessageList(index,limit));
+            model.addAttribute("total",voteService.getBannedVoteMessageSize(limit));
+        }else{
+            model.addAttribute("BannedVoteMessage",voteService.getBannedVoteMessageListById(userId,index,limit));
+            model.addAttribute("total",voteService.getBannedVoteMessageSizeById(userId,limit));
+        }
+        return "user";
+    }
+    @RequestMapping(value="/dustbinVoteMessage/recover")
+    public @ResponseBody Result recoverMessage(HttpSession httpSession,@RequestBody BannedVoteMessage bannedVoteMessage){
+        int userId=(int)httpSession.getAttribute("userID");
+        boolean valid=userService.checkUserValid(userId);
+        if(valid||userId==bannedVoteMessage.getUserId()) {
+            ResultCode code=voteService.recoverVoteMessage(bannedVoteMessage);
+            return new Result(code,code==ResultCode.SUCCESS?"恢复成功":"恢复失败");
+        }else{
+            return new Result(ResultCode.ACCESS_DENIED,"非法操作");
+        }
+    }
+    @RequestMapping(value = "/dustbinVoteMessage/delete")
+    public @ResponseBody Result deleteMessage(HttpSession httpSession,@RequestBody BannedVoteMessage bannedVoteMessage){
+        int userId=(int)httpSession.getAttribute("userID");
+        boolean valid=userService.checkUserValid(userId);
+        if(valid||userId==bannedVoteMessage.getUserId()) {
+            ResultCode code=voteService.deleteVoteMessage(bannedVoteMessage);
+            return new Result(code,code==ResultCode.SUCCESS?"删除成功":"恢复失败");
+        }else{
+            return new Result(ResultCode.ACCESS_DENIED,"非法操作");
+        }
+    }
+    @RequestMapping(value = "/exit",method = RequestMethod.GET)
+    public String loginOut(HttpServletRequest request, HttpServletResponse response){
+        Cookie[] cookies=request.getCookies();
+        for(Cookie cookie:cookies){
+            if(cookie.getName().equals("userID")){
+                cookie.setMaxAge(0);
+                cookie.setPath("/vote/");
+                response.addCookie(cookie);
+                System.out.println("before value: "+cookie.getMaxAge());
+                break;
+            }
+        }
+        HttpSession session=request.getSession();
+        session.invalidate();
+        return "redirect:/signIn";
     }
 }

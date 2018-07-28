@@ -71,7 +71,6 @@ public class VoteService {
     }
     public List<VoteHistory> getVoteHistories(int userId, int start, int end){
         List<UserVoteHistory> list=voteDao.getUserVoteHistories(userId,start,end);
-        System.out.println(list);
         Map<Integer,VoteHistory> map=new HashMap<>();
         for(UserVoteHistory userVoteHistory:list){
             if(map.get(userVoteHistory.getVoteId())==null){
@@ -144,7 +143,36 @@ public class VoteService {
         int result=voteDao.updateVoteMessageById(voteMessage);
         return result==1?ResultCode.SUCCESS:ResultCode.FAILED;
     }
-
+    public ResultCode banVoteMessage(VoteMessage voteMessage){
+        int result=voteDao.banVoteMessage(voteMessage);
+        return result==1?ResultCode.SUCCESS:ResultCode.FAILED;
+    }
+    public List<VoteMessage> getAllVoteMessageList(int start,int limit){
+        return voteDao.getAllVoteMessageList((start-1)*limit,limit);
+    }
+    public int getAllVoteMessageSize(int step){
+        return Integer.valueOf((voteDao.getAllVoteMessageSize()-1)/step)+1;
+    }
+    public List<BannedVoteMessage> getBannedVoteMessageList(int start,int limit){
+        return voteDao.getBannedVoteMessageList((start-1)*limit,limit);
+    }
+    public int getBannedVoteMessageSize(int limit){
+        return Integer.valueOf((voteDao.getBannedVoteMessageSize() -1)/limit)+1;
+    }
+    public ResultCode recoverVoteMessage(BannedVoteMessage bannedVoteMessage){
+        int result=voteDao.recoverVoteMessage(bannedVoteMessage);
+        return result==1?ResultCode.SUCCESS:ResultCode.RECOVER_FAILED;
+    }
+    public ResultCode deleteVoteMessage(BannedVoteMessage bannedVoteMessage){
+        int result=voteDao.delVoteMessage(bannedVoteMessage);
+        return result==1?ResultCode.SUCCESS:ResultCode.RECOVER_FAILED;
+    }
+    public List<BannedVoteMessage> getBannedVoteMessageListById(int userId,int start,int limit){
+        return voteDao.getBannedVoteMessageListById(userId,(start-1)*limit,limit);
+    }
+    public int getBannedVoteMessageSizeById(int userId,int limit){
+        return Integer.valueOf((voteDao.getBannedVoteMessageSizeById(userId) -1)/limit)+1;
+    }
     public static class VoteHistory{
         private int topicId;
         private int userId;
