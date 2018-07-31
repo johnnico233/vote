@@ -61,7 +61,7 @@ td.right-block .vote_type{
 
 td.right-block div.vote-progress {
     display: inline-block;
-    width: 48%;
+    width: 40%;
     margin-left: 10px;
 }
 td.right-block> div:last-of-type{

@@ -100,8 +100,9 @@
 
     <select id="getMyVoteList" parameterType="java.lang.Integer" resultMap="myVoteListMap ">
         select * from vote_history a left join vote_item b on a.item_id = b.item_id left join vote_topic c
-        on b.vote_id = c.vote_id where a.user_id = #{userId} and a.vote_id in (select t.vote_id from
-        (select distinct vote_id from vote_history order by vote_id asc limit #{start},#{end}) as t)
+        on b.vote_id = c.vote_id where  a.user_id = #{userId} and a.vote_id in
+        (select t.vote_id from ((select distinct vote_id from vote_history where user_id = #{userId} order by send_time
+        limit #{start} ,#{end})) as t);
     </select>
     <resultMap id="myVoteListMap" type="vote.domain.vote.UserVoteHistory">
         <result property="userId" column="user_id"/>
