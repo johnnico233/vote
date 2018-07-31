@@ -6,8 +6,10 @@
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
     <link th:href="'/'+${local}+'/css/core/bootstrap.min.css'" rel="stylesheet">
     <link th:href="'/'+${local}+'/css/voteUpload.css'" rel="stylesheet">
+    <link th:href="'/'+${local}+'/css/header.css'" rel="stylesheet">
 </head>
 <body>
+    <div th:include="~{header::vote-header}"></div>
     <p id="user-id" th:text="${userID}" style="display: none"></p>
     <p id="web-local" th:text="${local}" style="display: none;"></p>
     <div class="main-container">
@@ -52,5 +54,6 @@
     <script th:src="'/'+${local}+'/js/core/popper.min.js'"></script>
     <script th:src="'/'+${local}+'/js/core/bootstrap.js'"></script>
     <script th:src="'/'+${local}+'/js/voteUpload.js'"></script>
+    <script th:src="'/'+${local}+'/js/header.js'"></script>
 </body>
 </html>

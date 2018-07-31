@@ -1,10 +1,43 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
 <head>
     <meta charset="UTF-8">
     <title>Title</title>
+    <link th:href="'/'+${local}+'/css/core/bootstrap.min.css'" rel="stylesheet">
+    <link th:href="'/'+${local}+'/css/home.css'" rel="stylesheet">
+    <link th:href="'/'+${local}+'/css/header.css'" rel="stylesheet">
 </head>
 <body>
-    <p>yosoro</p>
+    <p id="user_id_recorder" th:text="${userID}" style="display: none"></p>
+    <p style="display: none" th:text="${local}" id="web-local"></p>
+    <div th:include="~{header::vote-header}"></div>
+    <div class="main-container">
+        <h1>投票列表<button class="btn btn-success">发起投票</button></h1>
+        <table>
+            <h4 th:if="${searchContent}!=null" th:text="'搜索内容:'+${searchContent}" id="searchContent"></h4>
+            <tr th:each="voteInfo:${voteList}">
+                <td> <p><span th:text="${voteInfo.voteTopic.topic}">投票标题</span><span th:text="${voteInfo.user.username}">投票用户</span>
+                    <span th:text="'投票类型:'+(${voteInfo.voteTopic.isMulti}?'多选':'单选')"></span></p>
+                    <p th:text="(${voteInfo.voteTopic.content.length()}>=32)?(${voteInfo.voteTopic.content.subString(0,32)}):
+                                (${voteInfo.voteTopic.content})" th:title="${voteInfo.voteTopic.content}">投票内容</p>
+                    <p><span th:text="${voteInfo.voteTopic.startTime}">2015-07-23</span>
+                        <span th:text="${voteInfo.voteTopic.endTime}">结束时间:2015-07-23</span>
+                        <span style="display:none" th:text="${voteInfo.voteTopic.id}"></span></p>
+                </td>
+            </tr>
+        </table>
+    </div>
+    <div class="skip-block">
+        <button class="btn btn-primary">上一页</button>
+        <span th:text="${index}">1</span>/
+        <span th:text="${total}">2</span><input class="form-control" type="number" >
+        <button class="btn btn-success">跳转</button>
+        <button class="btn btn-primary" >下一页</button>
+    </div>
+    <script th:src="'/'+${local}+'/js/core/jquery-3.2.1.js'"></script>
+    <script th:src="'/'+${local}+'/js/core/popper.min.js'"></script>
+    <script th:src="'/'+${local}+'/js/core/bootstrap.js'"></script>
+    <script th:src="'/'+${local}+'/js/home.js'"></script>
+    <script th:src="'/'+${local}+'/js/header.js'"></script>
 </body>
 </html>

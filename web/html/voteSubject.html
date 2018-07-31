@@ -17,7 +17,9 @@
     <table>
         <tr>
             <td class="left-block">
-                <img th:src="'/'+${local}+'/avatar/'+${topicUser.avatar}">
+                <a th:href="'/'+${local}+'/user/'+${userInfo.userId}">
+                    <img th:src="'/'+${local}+'/avatar/'+${topicUser.avatar}">
+                </a>
                 <p><a th:text="${userInfo.username}" th:href="'/'+${local}+'/user/'+${userInfo.userId}" style="color:#fff;"></a></p>
                 <p th:text="${userInfo.whatsUp}"></p>
                 <p>上次登录时间:</p>
@@ -27,12 +29,16 @@
                 <h1 th:text="${vote.topic}"></h1>
                 <h5><span class="vote_type">* </span>
                     目前投票类型为<span th:text="${vote.isMulti}?'多选':'单选'" class="vote_type"></span></h5>
+                <h6 th:text="${stateTitle}" th:style="${topicState}?'color:green':'color:red'"></h6>
                 <h6 th:text="${vote.content}" style="min-height: 300px;"></h6>
                 <p style="vertical-align: center">投票时间：<span class="vote-time" th:text="${startTime}"></span>到
                     <span class="vote-time" th:text="${endTime}"></span></p>
                 <div th:each="option,stats:${vote.topicOptionList}">
-                    <input th:type="(!${vote.isMulti})?'radio':'checkbox'" name="vote_option" th:value="${option.id}">
-                    <span class="vote-line" th:text="${option.name}"></span>
+                    <span th:if="(${myVoteOption}!=null) and (${myVoteOption.list.size()}>0)"
+                          style="display: inline-block;padding-left:3%;width:6%;"
+                          th:text="${myVoteOption.contains(option)}?'✔':' '"></span>
+                    <input th:if="(${userID}!=null) and (${myVoteOption.list.size()==0}  and (${topicState}) )" th:type="(!${vote.isMulti})?'radio':'checkbox'" name="vote_option" th:value="${option.id}">
+                    <span class="vote-line" th:text="${option.name}" th:style="((${userID}==null) or (${myVoteOption!=null}))?'margin-left:3%':''"></span>
                     <div class="vote-progress">
                         <div class="progress">
                             <div th:class="'progress-bar '+((${stats.index}%3==0)?'bg-success':((${stats.index}%3==1)?'bg-info':'bg-warning'))"
@@ -42,14 +48,16 @@
                     </div>
                     <span class="vote-count" th:text="${option.count}+'票'"></span>
                 </div>
-                <p th:if="${vote.isMulti}">目前最多只能投的票数为:
+                <p th:if="(${userId}!=null) or (${vote.isMulti}) and (${topicState})">目前最多可以选择的选项为:
                     <span class="margin-left: 10px;" th:text="${vote.totalVoteCount}" id="vote_max_count"></span></p>
-                <button class="btn btn-primary" disabled id="confirm-vote">确认投票</button>
+                <button class="btn btn-primary" disabled id="confirm-vote" th:if="(${userID}!=null) and (${myVoteOption}!=null) and (${myVoteOption.list.size()}==0) and (${topicState})">确认投票</button>
+                <button class="btn btn-light" disabled th:if="(${userID}!=null) and (${myVoteOption}!=null) and (${myVoteOption.list.size()}>0)">你已经投过票了</button>
+                <p th:if="${userID}==null">登录后即可参加投票~</p>
             </td>
         </tr>
         <tr th:each="voteMessage ,stats: ${voteMessages}">
             <td class="left-block" th:if="${voteMessage.available}">
-                <img th:src="'/'+${local}+'/avatar/'+${voteMessage.avatar}">
+                <a th:href="'/'+${local}+'/user/'+${voteMessage.userId}"><img th:src="'/'+${local}+'/avatar/'+${voteMessage.avatar}"></a>
                 <p><a th:text="${voteMessage.userName}" th:href="'/'+${local}+'/user/'+${voteMessage.userId}" style="color:#fff;"></a></p>
                 <p th:text="${voteMessage.whatsUp}">whatsUp</p>
                 <p>上次登录时间:</p>
@@ -72,7 +80,7 @@
         </div>
     </div>
     <div class="message-block">
-        <div class="send-message">
+        <div class="send-message" th:if="${userID}!=null">
             <h3>发表回复</h3>
             <p th:if="${myVoteMessage}!=null" th:text="${myVoteMessage.getId()}" id="message-id" style="display:none"></p>
             <textarea class="form-control" rows="10" id="message-input"
@@ -80,6 +88,7 @@
             <span>enter + ctrl发送</span>
             <button class="btn btn-success" id="send-message-btn" disabled>发送</button>
         </div>
+        <div th:if="${userID==null}" class="send-message-hint-block"><h2>登录后即可参与留言</h2></div>
     </div>
     <span style="display:none" th:text="${messageCount}" id="messageCount"></span>
     <span style="display:none" th:text="${index}" id="idx"></span>

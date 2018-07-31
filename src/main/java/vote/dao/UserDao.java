@@ -20,8 +20,12 @@ public class UserDao {
         SqlSession session=factory.openSession();
         try{
             PrivateUser user=session.selectOne("checkUserValid",privateUser);
-            if(user!=null)
-                return new UserWithResult(ResultCode.SUCCESS,user);
+            if(user!=null){
+                int updateSuccess=session.update("updateUserLastLogin",user.getUserId());
+                System.out.println(updateSuccess);
+                session.commit();
+                return new UserWithResult(updateSuccess>=1?ResultCode.SUCCESS:ResultCode.ADD_LOGIN_TIME_FAILED,user);
+            }
             else{
                 ResultCode code=checkUserExist(privateUser,session);
                 return new UserWithResult(code==ResultCode.ACCOUNT_EXIST?ResultCode.PASSWORD_ERROR:code,null);
@@ -299,5 +303,28 @@ public class UserDao {
             session.close();
         }
     }
-
+    public boolean checkUserRelation(int userId,int followId){
+        SqlSession session=factory.openSession();
+        try{
+            Map<String,Object> map=new HashMap<>();
+            map.put("myId",userId);
+            map.put("otherId",followId);
+            return (int)session.selectOne("checkUserRelationShip",map)>0;
+        }finally {
+            session.close();
+        }
+    }
+    public int switchUserRelation(int userId, int followId){
+        SqlSession session=factory.openSession();
+        try{
+            Map<String,Integer> map=new HashMap<>();
+            map.put("userId",userId);
+            map.put("followId",followId);
+            map.put("result",0);
+            session.selectOne("userRelationSwitch",map);
+            return map.get("result");
+        }finally {
+            session.close();
+        }
+    }
 }

@@ -24,7 +24,11 @@
                             </div>
                             <div class="form-group">
                                 <label class="col-form-label">密码</label>
-                                <input type="password" class="form-control">
+                                <input type="password" class="form-control" id="login-password">
+                            </div>
+                            <div>
+                                <input name="remember" type="checkbox" class="form-control" style="width: 5%;display: inline-block;">
+                                <label class="col-form-label">记住我</label>
                             </div>
                         </form>
                     </div>
@@ -48,8 +52,8 @@
                     <a class="dropdown-item" th:href="'/'+${local}+'/user/exit'">退出</a>
                 </div>
             </div>
-            <button class="btn btn-primary" data-target=".modal-body">search</button>
-            <button class="btn btn-info" data-target="#loginModal" data-toggle="modal" th:if="${user}==null">登录</button>
+            <button class="btn btn-primary" id="search-btn">search vote</button>
+            <button class="btn btn-info" data-target="#loginModal" data-toggle="modal" th:if="${user}==null" id="login-btn">登录</button>
         </header>
     </div>
 </body>

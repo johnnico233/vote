@@ -36,16 +36,33 @@ public class UserInfoController {
 
     @RequestMapping("/{id}")
     public String getUserOverview(HttpSession httpSession, Model model, @PathVariable int id) {
-        User user = userService.getUserOverviewInfo(id);
-        List<FollowUser> followUsers = userService.getFollowList(id, 0, 5);
-        if (user != null) {
-            model.addAttribute("userInfo", user);
-            model.addAttribute("infoType", "overview");
-            model.addAttribute("followList", followUsers);
-            model.addAttribute("title", "总览");
-            return "user";
+        int userId=(int)httpSession.getAttribute("userID");
+        if(userId==id){
+            User user = userService.getUserOverviewInfo(id);
+            List<FollowUser> followUsers = userService.getFollowList(id, 0, 5);
+            if (user != null) {
+                model.addAttribute("userInfo", user);
+                model.addAttribute("infoType", "overview");
+                model.addAttribute("followList", followUsers);
+                model.addAttribute("title", "总览");
+                return "user";
+            }else{
+                return "redirect:/";
+            }
+        }else{
+            User user = userService.getUserOverviewInfo(id);
+            System.out.println(user);
+            if(user!=null){
+                model.addAttribute("userInfo",user);
+                model.addAttribute("title","Ta的信息");
+                model.addAttribute("infoType","userExceptMeInfo");
+                model.addAttribute("isFriend",userService.checkUserRelationShip(userId,id));
+                model.addAttribute("otherUserId",id);
+                return "user";
+            }else{
+                return "redirect:/";
+            }
         }
-        return "home";
     }
 
     @RequestMapping("/{id}/userInfo")
@@ -57,7 +74,7 @@ public class UserInfoController {
             model.addAttribute("title", "我的信息");
             return "user";
         } else {
-            return "home";
+            return "redirect:/";
         }
     }
 
@@ -91,6 +108,7 @@ public class UserInfoController {
     public @ResponseBody
     Result updateUserInfo(@PathVariable int id, @RequestBody User user) {
         //wait for modify~
+        System.out.println(user);
         ResultCode resultCode = userService.updateUserInfo(user);
         return new Result(resultCode, resultCode == ResultCode.SUCCESS ? "修改成功" :
                 (resultCode == ResultCode.UPDATE_USER_INFO_FAILED) ? "更新用户信息失败" : "更新用户头像失败");
@@ -101,7 +119,7 @@ public class UserInfoController {
         if (httpSession.getAttribute("userID") != null) {
             return getUserOverview(httpSession, model, (int) httpSession.getAttribute("userID"));
         }
-        return "home";
+        return "redirect:/";
     }
 
     @RequestMapping(value = "/checkNameExistExceptMe", method = RequestMethod.POST)
@@ -161,6 +179,7 @@ public class UserInfoController {
         int result = userService.deleteFollowUser(info);
         return new Result(result == 1 ? ResultCode.SUCCESS : ResultCode.DELETE_FAILED, result == 1 ? "取消关注成功" : "取消关注失败");
     }
+
     @RequestMapping(value="/manage")
     public String getManageUserUrl(HttpSession httpSession,Model model,@RequestParam(required = false) String idx){
         int start=1;
@@ -181,15 +200,17 @@ public class UserInfoController {
             return "user";
         }else{
             //非法操作,返回首页
-            return "home";
+            return "redirect:/";
         }
     }
+
     @RequestMapping(value = "/manage/ban")
     public @ResponseBody Result banUser(HttpSession httpSession,@RequestBody User user){
         int userId=(int)httpSession.getAttribute("userID");
         int result=userService.banUser(user,userId);
         return new Result(result==1?ResultCode.SUCCESS:ResultCode.FAILED,result==1?"封停用户成功":"封停用户失败");
     }
+
     @RequestMapping(value="/manage/modify")
     public String returnModifyPage(HttpSession httpSession,Model model,@RequestParam String uid){
         if(uid==null)
@@ -200,7 +221,7 @@ public class UserInfoController {
             User user=userService.getUserInfoWithEvaluate(model,id,myId);
             if(user==null){
                 //404
-                return "home";
+                return "redirect:/";
             }else{
                 model.addAttribute("userInfo",user);
                 model.addAttribute("title","修改用户信息");
@@ -210,6 +231,7 @@ public class UserInfoController {
             }
         }
     }
+
     @RequestMapping(value="/dustbinUser")
     public String getDustbinUser(HttpSession httpSession,Model model,@RequestParam(required = false) String idx){
         int index=1;
@@ -227,9 +249,10 @@ public class UserInfoController {
             return "user";
         }else{
             //null代表检测到非法操作,返回首页
-            return "home";
+            return "redirect:/";
         }
     }
+
     @RequestMapping(value = "/dustbinUser/recover",method = RequestMethod.POST)
     public @ResponseBody Result recoverUser(HttpSession httpSession,@RequestBody User user){
         int id=(int)httpSession.getAttribute("userID");
@@ -239,6 +262,7 @@ public class UserInfoController {
         }else
             return new Result(result==1?ResultCode.SUCCESS:ResultCode.RECOVER_FAILED,result==1?"恢复成功":"恢复失败");
     }
+
     @RequestMapping(value = "/myVotes")
     public String getMyVotes(HttpSession httpSession,Model model,@RequestParam(required = false) String idx){
         int userId=(int)httpSession.getAttribute("userID");
@@ -253,13 +277,29 @@ public class UserInfoController {
         model.addAttribute("total",voteService.getVoteHistorySizeByUserId(userId,5));
         return "user";
     }
+
+    @RequestMapping(value="/myVoteTopics")
+    public String getMyVoteTopic(HttpSession httpSession,Model model,@RequestParam(required = false) String idx){
+        int userId=(int)httpSession.getAttribute("userID");
+        int index=1;
+        int limit=5;
+        if(idx!=null)
+            index=Integer.valueOf(idx);
+        model.addAttribute("title","我发起的投票");
+        model.addAttribute("infoType","myVoteTopics");
+        model.addAttribute("total",voteService.getUserVoteTopicListSize(userId,limit));
+        model.addAttribute("index",index);
+        model.addAttribute("voteList",voteService.getUserVoteTopicList(userId,index,limit));
+        return "user";
+    }
+
     @RequestMapping(value="/voteManage")
     public String getVoteManage(HttpSession httpSession,Model model,@RequestParam(required = false) String idx){
         int userId=(int)httpSession.getAttribute("userID");
         boolean isValid=userService.checkUserValid(userId);
         if(!isValid){
             //出现非法操作
-            return "home";
+            return "redirect:/";
         }else{
             int index=1;
             if(idx!=null)
@@ -272,6 +312,7 @@ public class UserInfoController {
             return "user";
         }
     }
+
     @RequestMapping(value="/voteManage/ban",method = RequestMethod.POST)
     public @ResponseBody Result banTopic(HttpSession httpSession,@RequestBody VoteTopic voteTopic){
         int userId=(int)httpSession.getAttribute("userID");
@@ -285,13 +326,14 @@ public class UserInfoController {
             return new Result(result==1?ResultCode.SUCCESS:ResultCode.FAILED,resultText);
         }
     }
+
     @RequestMapping(value="/voteManage/modify/{topicId}")
     public String redirectToModifyPage(HttpSession httpSession,Model model,@PathVariable int topicId){
         int userId=(int)httpSession.getAttribute("userID");
         boolean valid=userService.checkUserValid(userId);
         if(!valid){
             //非法操作
-            return "home";
+            return "redirect:/";
         }else{
             model.addAttribute("title","修改投票信息");
             VoteTopicWithOption voteTopic=voteService.getVoteInformation(topicId,model,true);
@@ -303,6 +345,7 @@ public class UserInfoController {
             }
         }
     }
+
     @RequestMapping(value="/dustbinVote")
     public String getDustbinVote(HttpSession httpSession,Model model,@RequestParam(required = false) String idx){
         int userId=(int)httpSession.getAttribute("userID");
@@ -321,6 +364,7 @@ public class UserInfoController {
         }
         return "user";
     }
+
     @RequestMapping(value = "/dustbinVote/recover")
     public @ResponseBody Result recoverBannedVote(HttpSession httpSession, @RequestBody BannedVoteTopic bannedVoteTopic){
         int userId=(int)httpSession.getAttribute("userID");
@@ -334,6 +378,7 @@ public class UserInfoController {
             return new Result(isRecover?ResultCode.SUCCESS:ResultCode.RECOVER_FAILED,resultText);
         }
     }
+
     @RequestMapping("/myVoteMessage")
     public String getMyVoteMessage(HttpSession httpSession,Model model,@RequestParam(required = false) String idx){
         int userId=(int)httpSession.getAttribute("userID");
@@ -344,47 +389,46 @@ public class UserInfoController {
         model.addAttribute("index",index);
         model.addAttribute("total",voteService.getMyVoteMessageSize(userId,10));
         model.addAttribute("infoType","myVoteMessage");
-        model.addAttribute("title","我的投票");
+        model.addAttribute("title","我的留言");
         return "user";
     }
+
     @RequestMapping("/voteModify")
     public String modifyVoteMessage(HttpSession httpSession,Model model,@RequestParam(value = "mes") String messageId,
                                     @RequestParam(value = "topic") String topicId,
                                     @RequestParam(required = false,value = "return") String returnPage){
         int userId=(int)httpSession.getAttribute("userID");
-        boolean valid=userService.checkUserValid(userId);
-        if(!valid){
-            //非法操作
-            return "home";
+        VoteTopicWithOption voteTopic=voteService.getVoteInformation(Integer.valueOf(topicId),model,false);
+        if(voteTopic!=null){
+            voteService.getVoteMessages(model,Integer.valueOf(topicId),1,5);
+            model.addAttribute("index",1);
+            model.addAttribute("topicUser",userService.getUserOverviewInfo(userId));
+            model.addAttribute("step",5);
+            VoteMessage voteMessage=voteService.getVoteMessageById(Integer.valueOf(messageId));
+            model.addAttribute("myVoteMessage",voteMessage);
+            List<UserVoteHistory> myTopicOption=voteService.getMyVoteOptions(userId,voteTopic.getId());
+            model.addAttribute("myVoteOption",new VoteSubjectController.MyTopicOption(myTopicOption));
+            if(returnPage!=null)
+                model.addAttribute("returnPage",true);
+            return "voteSubject";
         }else{
-            VoteTopicWithOption voteTopic=voteService.getVoteInformation(Integer.valueOf(topicId),model,false);
-            if(voteTopic!=null){
-                voteService.getVoteMessages(model,Integer.valueOf(topicId),1,5);
-                model.addAttribute("index",1);
-                model.addAttribute("topicUser",userService.getUserOverviewInfo(userId));
-                model.addAttribute("step",5);
-                VoteMessage voteMessage=voteService.getVoteMessageById(Integer.valueOf(messageId));
-                model.addAttribute("myVoteMessage",voteMessage);
-                if(returnPage!=null)
-                    model.addAttribute("returnPage",true);
-                return "voteSubject";
-            }else{
-                return "home";
-            }
+            return "redirect:/";
         }
     }
+
     @RequestMapping(value = "/delVoteMessage",method = RequestMethod.POST)
     public @ResponseBody Result banVoteMessage(@RequestBody VoteMessage voteMessage){
         ResultCode code=voteService.banVoteMessage(voteMessage);
         return new Result(code,code==ResultCode.SUCCESS?"删除成功":"删除失败");
     }
+
     @RequestMapping(value="/voteMessageManage")
     public String getAllVoteMessages(HttpSession httpSession,Model model,@RequestParam(required = false) String idx){
         int userId=(int)httpSession.getAttribute("userID");
         boolean isValid = userService.checkUserValid(userId);
         if(!isValid){
             //非法操作
-            return "home";
+            return "redirect:/";
         }else{
             int index=1;
             int step=10;
@@ -400,6 +444,7 @@ public class UserInfoController {
             return "user";
         }
     }
+
     @RequestMapping(value="/dustbinVoteMessage")
     public String getDustbinVoteMessage(HttpSession httpSession,Model model,@RequestParam(required = false) String idx){
         int userId=(int)httpSession.getAttribute("userID");
@@ -420,6 +465,7 @@ public class UserInfoController {
         }
         return "user";
     }
+
     @RequestMapping(value="/dustbinVoteMessage/recover")
     public @ResponseBody Result recoverMessage(HttpSession httpSession,@RequestBody BannedVoteMessage bannedVoteMessage){
         int userId=(int)httpSession.getAttribute("userID");
@@ -431,6 +477,7 @@ public class UserInfoController {
             return new Result(ResultCode.ACCESS_DENIED,"非法操作");
         }
     }
+
     @RequestMapping(value = "/dustbinVoteMessage/delete")
     public @ResponseBody Result deleteMessage(HttpSession httpSession,@RequestBody BannedVoteMessage bannedVoteMessage){
         int userId=(int)httpSession.getAttribute("userID");
@@ -442,6 +489,7 @@ public class UserInfoController {
             return new Result(ResultCode.ACCESS_DENIED,"非法操作");
         }
     }
+
     @RequestMapping(value = "/exit",method = RequestMethod.GET)
     public String loginOut(HttpServletRequest request, HttpServletResponse response){
         Cookie[] cookies=request.getCookies();
@@ -456,6 +504,54 @@ public class UserInfoController {
         }
         HttpSession session=request.getSession();
         session.invalidate();
-        return "redirect:/signIn";
+        return "redirect:/";
+    }
+
+    @RequestMapping(value="/otherUserTopic/{id}")
+    public String getUserExceptMeVoteTopicList(HttpSession httpSession,Model model,@PathVariable int id,
+                                               @RequestParam(required = false) String idx){
+        int userId=(int)httpSession.getAttribute("userID");
+        if(userId==id){
+            return "redirect:/user";
+        }else{
+            int index=1;
+            int limit=5;
+            if(idx!=null)
+                index=Integer.valueOf(idx);
+            model.addAttribute("title","Ta发起的投票");
+            model.addAttribute("infoType","userVoteTopics");
+            model.addAttribute("total",voteService.getUserVoteTopicListSize(id,limit));
+            model.addAttribute("index",index);
+            model.addAttribute("voteList",voteService.getUserVoteTopicList(id,index,limit));
+            model.addAttribute("otherUserId",id);
+            return "user";
+        }
+    }
+    @RequestMapping(value="/switchRelation",method = RequestMethod.POST)
+    public @ResponseBody Result switchRelation(HttpSession httpSession,@RequestBody UserRelation user){
+        int userId=(int)httpSession.getAttribute("userID");
+        ResultCode code=userService.switchUserRelation(userId,user.followId);
+        String resultText=code==ResultCode.SWITCH_FAILED?"操作失败":(code==ResultCode.SWITCH_ADD?"关注成功":"取消关注成功");
+        return new Result(code,resultText);
+    }
+    static class UserRelation{
+        int userId;
+        int followId;
+
+        public int getUserId() {
+            return userId;
+        }
+
+        public void setUserId(int userId) {
+            this.userId = userId;
+        }
+
+        public int getFollowId() {
+            return followId;
+        }
+
+        public void setFollowId(int followId) {
+            this.followId = followId;
+        }
     }
 }

@@ -1,6 +1,6 @@
 table{
     width:1000px;
-    margin:30px auto 0px auto;
+    margin:80px auto 0px auto;
     background-color:#378194;
     border-right: 1px solid #ccc;
 }
@@ -63,6 +63,9 @@ td.right-block div.vote-progress {
     display: inline-block;
     width: 48%;
     margin-left: 10px;
+}
+td.right-block> div:last-of-type{
+    margin-bottom: 10px;
 }
 
 input[name='vote_option']{
@@ -168,4 +171,10 @@ div.skip-block button:nth-of-type(2){
     padding: 20px 10px 0px 10px;
     margin-top: 0px;
     display: inline-block;
+}
+
+.send-message-hint-block{
+    line-height: 100px;
+    text-align: center;
+    color: #fff;
 }

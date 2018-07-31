@@ -156,4 +156,18 @@
     <select id="recoverUser" parameterMap="recoverUserMap" statementType="CALLABLE">
         call recoverUser(?,?);
     </select>
+    <update id="updateUserLastLogin" parameterType="java.lang.Integer">
+        update user_info set last_login_time = now() where user_id = #{userId};
+    </update>
+    <select id="checkUserRelationShip" resultType="java.lang.Integer">
+        select COUNT(*) from user_relationship where user_id = #{myId} and follow_user_id = #{otherId}
+    </select>
+    <parameterMap id="userRelationMap" type="java.util.Map">
+        <parameter property="userId" mode="IN"/>
+        <parameter property="followId" mode="IN"/>
+        <parameter property="result" mode="OUT" jdbcType="INTEGER"/>
+    </parameterMap>
+    <select id="userRelationSwitch" parameterMap="userRelationMap" statementType="CALLABLE">
+        call alterUserRelationShip(?,?,?);
+    </select>
 </mapper>

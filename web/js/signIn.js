@@ -20,7 +20,9 @@ function signIn(){
         headers:{'Content-type':'application/json;charset=utf-8'}
     }).done(function(json){
         console.log(json);
-        if(json.resultCode!="SUCCESS"){
+        if(json.resultCode=='USER_IS_BANNED'){
+            alert(json.resultText);
+        } else if(json.resultCode!="SUCCESS"){
             $(".input-hint").css("display","block");
             $(".input-hint").html(json.resultText);
         }

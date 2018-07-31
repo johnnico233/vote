@@ -1,6 +1,6 @@
 .main-container{
     min-width:1000px;
-    margin:20px auto;
+    margin:80px auto;
     width:100%;
     padding:0px 15px;
 }
@@ -36,10 +36,9 @@ tr{
 }
 
 div.menu-list a{
-    text-align: center;
     display: block;
     border-bottom: 1px solid #fff;
-    padding:5px 0;
+    padding:5px 25px;
     text-decoration: none;
     color: #fff;
 }

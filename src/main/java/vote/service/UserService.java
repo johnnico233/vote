@@ -129,4 +129,12 @@ public class UserService {
             return -1;
         }
     }
+    public boolean checkUserRelationShip(int userId,int followId){
+        return userDao.checkUserRelation(userId,followId);
+    }
+    public ResultCode switchUserRelation(int userId,int followId){
+        int result=userDao.switchUserRelation(userId,followId);
+        ResultCode code=(result==0?ResultCode.SWITCH_FAILED:(result==1?ResultCode.SWITCH_ADD:ResultCode.SWITCH_DELETE));
+        return code;
+    }
 }

@@ -9,12 +9,12 @@
     <link th:href="'/'+${local}+'/css/header.css'" rel="stylesheet">
 </head>
 <body>
-    <p id="user_id_recorder" th:text="${userID}"></p>
+    <p id="user_id_recorder" th:text="${userID}" style="display:none"></p>
     <p style="display: none" th:text="${local}" id="web-local"></p>
     <div th:include="~{header::vote-header}"></div>
     <div class="main-container">
         <table>
-            <tr>
+            <tr th:if="(${infoType}!='userExceptMeInfo') and (${infoType}!='userVoteTopics')">
                 <th class="left-block">
                     <div class="menu-list" id="user-info-block"><p class="menu-title">用户信息</p>
                         <div>
@@ -28,6 +28,7 @@
                     <div class="menu-list" id="vote-info-block"><p class="menu-title">投票信息</p>
                         <div>
                             <a th:href="'/'+${local}+'/user/myVotes'">我的投票</a>
+                            <a th:href="'/'+${local}+'/user/myVoteTopics'">我发起的投票</a>
                             <a th:if="${isAdmin}" th:href="'/'+${local}+'/user/voteManage'">投票管理</a>
                             <a th:if="${isAdmin}" th:href="'/'+${local}+'/user/dustbinVote'">回收站</a>
                         </div>
@@ -58,7 +59,7 @@
                         </div>
                         <div class="overview-follow">
                             <h3>我关注的用户<button class="btn btn-info">更多</button></h3>
-                            <table>
+                            <table th:if="${followList.size()}!=0">
                                 <tr>
                                     <th colspan="2">用户</th><th>上一次登录</th><th>关注日期</th>
                                 </tr>
@@ -68,6 +69,7 @@
                                     <td th:text="${followUser.followTime}"></td>
                                 </tr>
                             </table>
+                            <h2 th:if="${followList.size()}==0" style="text-align: center">暂无关注过好友</h2>
                         </div>
                     </div>
                     <!--用户信息-->
@@ -126,7 +128,7 @@
                             <p class="error-hint">生日不能为空</p>
                             <p><span>个性签名:</span><textarea rows="5" class="form-control" name="whatsUp" th:text="${userInfo.whatsUp}"></textarea></p>
                             <p class="error-hint">个性签名长度为0~32</p>
-                            <p th:if="${returnPage}!=null" th:text="${returnPage}" id="manage-return-page"></p>
+                            <p th:if="${returnPage}!=null" th:text="${returnPage}" id="manage-return-page" style="display:none"></p>
                         </div>
                     </div>
                     <!--关注列表-->
@@ -137,7 +139,7 @@
                             </tr>
                             <tr th:each="followUser :${followList}">
                                 <td><img th:src="'/'+${local}+'/avatar/'+${followUser.avatar}"></td>
-                                <td><a href="#" th:text="${followUser.username}"></a></td>
+                                <td><a th:href="'/'+${local}+'/user'+${followUser.userId}" th:text="${followUser.username}"></a></td>
                                 <td th:text="${followUser.lastLogin}"></td>
                                 <td th:text="${followUser.followTime}"></td>
                                 <td><button class="btn btn-danger">取消关注</button></td>
@@ -162,8 +164,8 @@
                                 </tr>
                                 <tr th:each="user:${managedUser}">
                                     <td><img th:src="'/'+${local}+'/avatar/'+${user.avatar}"></td>
-                                    <td><a href="#" th:text="${user.account}"></a></td>
-                                    <td><a th:text="${user.username}" href="#"></a></td>
+                                    <td><a th:href="'/'+${local}+'/user/'+${user.userId}" th:text="${user.account}"></a></td>
+                                    <td><a th:text="${user.username}" th:href="'/'+${local}+'/user/'+${user.userId}"></a></td>
                                     <td th:text="${user.getLastLogin()}"></td>
                                     <td><button class="btn btn-info">修改</button></td>
                                     <td><button class="btn btn-danger">封禁</button></td>
@@ -182,7 +184,8 @@
                     </div>
                     <!--我的投票-->
                     <div th:if="${infoType}=='userVotes'" class="user-vote-manager">
-                        <div style="min-height: 400px">
+                        <h2 th:if="${voteHistories.size()}==0" style="text-align: center">Sorry,你暂时没有投票过ㄟ( ▔, ▔ )ㄏ</h2>
+                        <div style="min-height: 400px" th:if="${voteHistories.size()}!=0">
                             <table>
                                 <tr>
                                     <th>投票标题</th><th>我的投票</th><th>投票时间</th><th>状态</th>
@@ -197,7 +200,7 @@
                                 </tr>
                             </table>
                         </div>
-                        <div class="skip-block">
+                        <div class="skip-block" th:if="${voteHistories.size()}!=0">
                             <button class="btn btn-primary">上一页</button>
                             <span th:text="${index}">1</span>/
                             <span th:text="${total}">2</span><input class="form-control" type="number" >
@@ -206,10 +209,12 @@
                         </div>
                     </div>
                     <!--投票管理-->
-                    <div th:if="${infoType}=='voteManage'" class="vote-manager">
-                        <div style="min-height: 400px">
+                    <div th:if="(${infoType}=='voteManage' )or (${infoType}=='myVoteTopics')" class="vote-manager" th:id="${infoType}">
+                        <h2 th:if="${voteList.size()}==0" style="text-align: center">Sorry,你暂时发起过任何投票ㄟ( ▔, ▔ )ㄏ</h2>
+                        <div style="min-height: 400px" th:if="${voteList.size()}!=0">
                             <table>
-                                <tr><th>编号</th><th>投票标题</th><th>投票内容</th><th>发布时间</th><th colspan="2">操作</th></tr>
+                                <tr><th>编号</th><th>投票标题</th><th>投票内容</th><th>发布时间</th>
+                                    <th colspan="2" th:if="${infoType}=='voteManage'">操作</th></tr>
                                 <tr th:each="voteItem:${voteList}">
                                     <td th:text="'#'+${voteItem.id}"></td>
                                     <td><a th:text="(${voteItem.topic.length()}>=10)?(${voteItem.topic.substring(0,10)}+'....')
@@ -218,12 +223,12 @@
                                     <td th:text="(${voteItem.content.length()}>=10)?(${voteItem.content.substring(0,10)}+'....')
                                     :${voteItem.content}" th:title="${voteItem.content}">content</td>
                                     <td th:text="${voteItem.createTime}">2015-09-02</td>
-                                    <td><button class="btn btn-info" th:disabled="${!voteItem.modifiable}">修改</button></td>
-                                    <td><button class="btn btn-danger">删除</button></td>
+                                    <td th:if="${infoType}=='voteManage'"><button class="btn btn-info" th:disabled="${!voteItem.modifiable}">修改</button></td>
+                                    <td th:if="${infoType}=='voteManage'"><button class="btn btn-danger">删除</button></td>
                                 </tr>
                             </table>
                         </div>
-                        <div class="skip-block">
+                        <div th:if="${voteList.size()}!=0" class="skip-block">
                             <button class="btn btn-primary">上一页</button>
                             <span th:text="${index}">1</span>/
                             <span th:text="${total}">2</span><input class="form-control" type="number" >
@@ -289,8 +294,9 @@
                     </div>
                     <!--我的留言-->
                     <div th:if="${infoType}=='myVoteMessage'" class="user-message">
+                        <h2 th:if="${voteMessageList.size()}==0" style="text-align: center">Sorry,你暂时没有留言过ㄟ( ▔, ▔ )ㄏ</h2>
                         <div style="min-height: 400px">
-                            <table>
+                            <table th:if="${voteMessageList.size()!=0}">
                                 <tr><th>投票标题</th><th>留言内容</th><th>留言时间</th><th colspan="2">操作</th></tr>
                                 <tr th:each="message:${voteMessageList}">
                                     <td><a th:href="'/'+${local}+'/voteSubject/'+${message.voteId}"
@@ -305,7 +311,7 @@
                                 </tr>
                             </table>
                         </div>
-                        <div class="skip-block">
+                        <div class="skip-block" th:if="${voteMessageList.size()}!=0">
                             <button class="btn btn-primary">上一页</button>
                             <span th:text="${index}">1</span>/
                             <span th:text="${total}">2</span><input class="form-control" type="number" >
@@ -315,11 +321,12 @@
                     </div>
                     <!--留言管理-->
                     <div th:if="${infoType}=='voteMessageManage'" class="message-manager">
+                        <h2 th:if="${voteMessageList.size()}==0" style="text-align: center">Sorry,暂时没有留言ㄟ( ▔, ▔ )ㄏ</h2>
                         <div style="min-height: 400px">
-                            <table>
+                            <table th:if="${voteMessageList.size()}!=0">
                                 <tr><th>投票标题</th><th>用户名</th><th>留言内容</th><th>留言时间</th><th colspan="2">操作</th></tr>
                                 <tr th:each="voteMeesage:${voteMessageList}">
-                                    <td><a th:href="'/'+${local}+'/voteSubject/'+${voteMeesage.id}"
+                                    <td><a th:href="'/'+${local}+'/voteSubject/'+${voteMeesage.voteId}"
                                            th:text="(${voteMeesage.voteTitle.length()}>=6)?
                                            (${voteMeesage.voteTitle.substring(0,6)}+'...'):(${voteMeesage.voteTitle})"
                                             th:title="${voteMeesage.voteTitle}"></a></td>
@@ -337,7 +344,63 @@
                                 </tr>
                             </table>
                         </div>
-                        <div class="skip-block">
+                        <div class="skip-block" th:if="${voteMessageList.size()}!=0">
+                            <button class="btn btn-primary">上一页</button>
+                            <span th:text="${index}">1</span>/
+                            <span th:text="${total}">2</span><input class="form-control" type="number" >
+                            <button class="btn btn-success">跳转</button>
+                            <button class="btn btn-primary" >下一页</button>
+                        </div>
+                    </div>
+                </th>
+            </tr>
+            <tr th:if="(${infoType}=='userExceptMeInfo') or (${infoType}=='userVoteTopics')">
+                <p style="display:none" id="userExceptMeId" th:text="${otherUserId}"></p>
+                <th class="left-block">
+                    <div class="menu-list" id="userExceptMeInfo"><p class="menu-title">Ta的信息</p>
+                        <div>
+                            <a th:href="'/'+${local}+'/user/'+${otherUserId}">个人信息</a>
+                            <a th:href="'/'+${local}+'/user/otherUserTopic/'+${otherUserId}">Ta发起过的投票</a>
+                        </div>
+                    </div>
+                </th>
+                <th class="right-block">
+                    <h1 th:text="${title}">总览</h1>
+                    <div th:if="${infoType}=='userExceptMeInfo'" class="user-block" id="userExceptMeInfo-block">
+                        <div class="overview-user" id="otherUserInfo">
+                            <h3>用户信息<button th:text="${isFriend}?'取消关注':'关注'" id="follow-btn"
+                                        th:class="${isFriend}?'btn btn-danger':'btn btn-primary'">关注</button></h3>
+                            <div>
+                                <div>
+                                    <p><span>昵称:</span><span th:text="${userInfo.username}">Yosiko</span></p>
+                                    <p><span>上次登录</span><span th:text="${userInfo.lastLogin}">2018-08-01</span></p>
+                                </div>
+                                <img th:src="'/'+${local}+'/avatar/'+${userInfo.avatar}">
+                            </div>
+                            <div style="margin-top: -80px;">
+                                <p><span>性别:</span><span th:text="${userInfo.sex}=='female'?'女':'男'">女</span></p>
+                                <p><span>生日:</span><span th:text="${userInfo.birth}">2018-09-10</span></p>
+                            </div>
+                            <p><span>个性签名:</span><span th:text="${userInfo.whatsUp}">there is nothing to show for you</span></p>
+                        </div>
+                    </div>
+                    <div th:if="${infoType}=='userVoteTopics'" class="vote-manager" th:id="${infoType}">
+                        <h2 th:if="${voteList.size()}==0" style="text-align: center">Sorry,该用户暂时没有发起过任何投票ㄟ( ▔, ▔ )ㄏ</h2>
+                        <div style="min-height: 400px" th:if="${voteList.size()}!=0">
+                            <table>
+                                <tr><th>编号</th><th>投票标题</th><th>投票内容</th><th>发布时间</th></tr>
+                                <tr th:each="voteItem:${voteList}">
+                                    <td th:text="'#'+${voteItem.id}"></td>
+                                    <td><a th:text="(${voteItem.topic.length()}>=10)?(${voteItem.topic.substring(0,10)}+'....')
+                                    :${voteItem.topic}" th:href="'/'+${local}+'/voteSubject/'+${voteItem.id}"
+                                           th:title="${voteItem.topic}">title</a></td>
+                                    <td th:text="(${voteItem.content.length()}>=10)?(${voteItem.content.substring(0,10)}+'....')
+                                    :${voteItem.content}" th:title="${voteItem.content}">content</td>
+                                    <td th:text="${voteItem.createTime}">2015-09-02</td>
+                                </tr>
+                            </table>
+                        </div>
+                        <div th:if="${voteList.size()}!=0" class="skip-block">
                             <button class="btn btn-primary">上一页</button>
                             <span th:text="${index}">1</span>/
                             <span th:text="${total}">2</span><input class="form-control" type="number" >

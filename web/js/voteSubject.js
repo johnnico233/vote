@@ -69,7 +69,7 @@ function voteUpload(){
             data.push(itemId);
         });
         var url="/"+$("#web-local").html()+"/voteSubject/sendVote";
-        data={userId:2,voteOptions:data,topicId:parseInt(topicId)};
+        data={userId:$("#userID").html()    ,voteOptions:data,topicId:parseInt(topicId)};
         sendData2Server(url,data,true,null)
     });
     var clickCount=0;

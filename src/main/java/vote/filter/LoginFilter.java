@@ -14,23 +14,14 @@ import java.io.IOException;
 public class LoginFilter implements Filter{
     @Override
     public void doFilter(ServletRequest servletRequest, ServletResponse servletResponse, FilterChain filterChain) throws IOException, ServletException {
+        System.out.println("fliter now");
         HttpServletRequest request=(HttpServletRequest)servletRequest;
         HttpServletResponse response=(HttpServletResponse)servletResponse;
         HttpSession httpSession=request.getSession();
-        boolean isUserExist=false;
+        boolean isUserExist=true;
         if(httpSession.getAttribute("userID")==null){
-            Cookie[] cookies=request.getCookies();
-            if(cookies!=null){
-                for(Cookie cookie:cookies){
-                    if(cookie.getName().equals("userID")){
-                        httpSession.setAttribute("userID",Integer.parseInt(cookie.getValue()));
-                        isUserExist=true;
-                        break;
-                    }
-                }
-            }
-        }else
-            isUserExist=true;
+            isUserExist=false;
+        }
         if(!isUserExist){
             String url=request.getRequestURI().substring(0,request.getRequestURI().indexOf("/",1));
             response.sendRedirect(url+"/signIn");

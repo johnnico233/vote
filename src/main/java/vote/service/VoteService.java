@@ -173,6 +173,27 @@ public class VoteService {
     public int getBannedVoteMessageSizeById(int userId,int limit){
         return Integer.valueOf((voteDao.getBannedVoteMessageSizeById(userId) -1)/limit)+1;
     }
+    public List<VoteListInfo> getVoteListInfo(int start,int limit){
+        return voteDao.getVoteListInfo((start-1)*limit,limit);
+    }
+    public int getVoteListInfoSize(int limit){
+        return Integer.valueOf((voteDao.getVoteListInfoSize()-1)/limit)+1;
+    }
+    public List<UserVoteHistory> getMyVoteOptions(int userId,int topicId){
+        return voteDao.getMyVoteOption(userId,topicId);
+    }
+    public List<VoteListInfo> getVoteListInfoWithSearch(int start,int limit,String content){
+        return voteDao.getVoteListInfoWithSearch((start-1)*limit,limit,content);
+    }
+    public int getVoteListInfoWithSearchSize(String content,int limit){
+        return Integer.valueOf((voteDao.getVoteListInfoWithSearchSize(content)-1)/limit)+1;
+    }
+    public List<VoteTopic> getUserVoteTopicList(int userId, int start,int limit){
+        return voteDao.getUserVoteTopicsByUserId(userId,(start-1)*limit,limit);
+    }
+    public int getUserVoteTopicListSize(int userId,int limit){
+        return Integer.valueOf((voteDao.getUserVoteTopicsSizeByUserId(userId)-1)/limit)+1;
+    }
     public static class VoteHistory{
         private int topicId;
         private int userId;

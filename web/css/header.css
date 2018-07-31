@@ -1,4 +1,7 @@
 header{
+    position: fixed;
+    width: 100%;
+    top: 0;
     background-color:#474747;
 }
 header>label{
@@ -20,6 +23,10 @@ header>label >a:hover,header>label >a:visited{
     margin-left: 12%;
     width:30%;
     display:inline-block;
+}
+header #search-btn{
+    width: auto;
+    float: none;
 }
 header >button:first-of-type{
     margin-top: -5px;

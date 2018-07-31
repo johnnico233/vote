@@ -13,6 +13,8 @@ import vote.result.Result;
 import vote.result.ResultCode;
 import vote.service.VoteService;
 
+import javax.servlet.http.HttpSession;
+
 @Controller
 @RequestMapping("/voteUpload")
 public class VoteUploadController {
@@ -21,7 +23,7 @@ public class VoteUploadController {
     @Autowired
     private VoteService voteService;
     @RequestMapping(method = RequestMethod.GET)
-    public String getUrl(Model model){
+    public String getUrl(HttpSession httpSession, Model model){
         model.addAttribute("title","发起投票");
         return "voteUpload";
     }

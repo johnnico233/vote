@@ -86,7 +86,7 @@ function setMaxSizeHint(){
 function checkAndSend(){
     var isValid=true;
     var maxLength=[32,250,16];
-    $.each($("input[type='text']"),function(index,item){
+    $.each($("input[name='title']"),function(index,item){
         item=$(item);
         var length=$.trim(item.val());
         if(index<maxLength.length){
@@ -150,7 +150,8 @@ function checkAndSend(){
     }else
         startTime.popover('hide');
     length=$.trim(endTime.val()).length;
-    if(!isValid||length<=0||Date.parse(startTime.val())>Date.parse(endTime.val())){
+    if(!isValid||length<=0||startTime.val()>endTime.val()){
+        console.log(isValid+"\t"+length+"\t"+startTime.val()+"\t"+endTime.val())
         endTime.popover('show');
         setTimeout(function(){
             startTime.popover('hide');
@@ -207,6 +208,7 @@ function send(){
     var data={"topic":$.trim($("input[name='title']").val()),"content":$.trim($("textarea[name='content']").val()),
               "isMulti":$("input[name='vote_type']:checked").val()=="multi","totalVoteCount":$("input[type='number']").val(),
               "options":options,"startTime":startTime,"endTime":endTime,"userId":$("#user-id").html()};
+    console.log(data);
     var url="/"+$("#web-local").html()+"/voteUpload/addNewTopic";
     if($("#vote-topic-id").length>0){
         data['id']=$("#vote-topic-id").html().substring(1);

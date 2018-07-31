@@ -15,6 +15,7 @@ $(function(){
     setMyMessage();
     setVoteMessageManage();
     setMessageDustbin();
+    setFollowBtn();
 });
 
 function setLeftBlockAnimation(){
@@ -160,7 +161,7 @@ function setUserInfo(){
                 var uid=$("#manage-modify-user-id").length>0?$("#manage-modify-user-id").html():userId;
                 var data={userId:uid,username:$("input[name='username']").val(),sex:$("input[name='sex']:checked").val(),
                     email:$("input[name='email']").val(),phone:$("input[name='phone']").val(),
-                    birth:$("input[name='birth']").val(),whatsUp:$("textarea[name='whatsUp']").val(),avatar:filename};
+                    birth:$("input[name='birth']").val()+" 00:00",whatsUp:$("textarea[name='whatsUp']").val(),avatar:filename};
                 var url="/"+$("#web-local").html()+"/user/"+userId+"/updateUserInfo";
                 sendData2Server("/"+$("#web-local").html()+"/user/checkInfoExceptMe",data,function(json){
                     if(json.resultCode=='SUCCESS'){
@@ -379,6 +380,11 @@ function setVoteManage(){
             })
         });
         var url="/"+$("#web-local").html()+"/user/voteManage";
+        if($("#myVoteTopics").length>0){
+            url="/"+$("#web-local").html()+"/user/myVoteTopics";
+        }else if($("#userExceptMeId").length>0){
+            url="/"+$("#web-local").html()+"/user/otherUserTopic/"+$("#userExceptMeId").html();
+        }
         var preBtn=$(".skip-block button:first-of-type");
         var nextBtn=$(".skip-block button:last-of-type");
         var idx=parseInt($(".vote-manager .skip-block span:first-of-type").html());
@@ -489,6 +495,20 @@ function setMessageDustbin(){
                 });
             })
         });
+    }
+}
+//非本用户关注按钮触发设置
+function setFollowBtn(){
+    if($("#userExceptMeInfo-block").length>0){
+        $("#follow-btn").on("click",function(){
+            console.log("hello");
+            var url="/"+$("#web-local").html()+"/user/switchRelation";
+            var data={"followId":$("#userExceptMeId").html()};
+            sendData2Server(url,data,function(json){
+                alert(json.resultText);
+                window.location.reload();
+            });
+        })
     }
 }
 

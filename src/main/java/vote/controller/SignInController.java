@@ -27,7 +27,7 @@ public class SignInController {
     @RequestMapping(value = "/signIn",method = RequestMethod.GET)
     public String getSignInUrl(HttpSession httpSession, Model model){
         if(httpSession.getAttribute("userID")!=null){
-            return "user";
+            return "redirect:/user";
         }else{
             return "signIn";
         }
@@ -39,7 +39,9 @@ public class SignInController {
         ResultCode code=userWithResult.getResultCode();
         if(code!=ResultCode.SUCCESS)
             return new Result(code,(code==ResultCode.ACCOUNT_NOT_EXIST?"账号不存在":"密码错误"));
-        else{
+        else if(!userWithResult.getPrivateUser().isLoginable()){
+            return new Result(ResultCode.USER_IS_BANNED,"该账号已经被封停,具体原因请联系管理员");
+        }else{
             httpSession.setAttribute("userID",userWithResult.getPrivateUser().getUserId());
             if(user.isRemember()) {
                 Cookie cookie=new Cookie("userID",String.valueOf(userWithResult.getPrivateUser().getUserId()));

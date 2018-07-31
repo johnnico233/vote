@@ -1,5 +1,6 @@
 package vote.domain.vote;
 import java.util.Date;
+import java.util.Objects;
 
 public class UserVoteHistory {
     private int userId;
@@ -108,4 +109,5 @@ public class UserVoteHistory {
                 ", endTime=" + endTime +
                 '}';
     }
+
 }

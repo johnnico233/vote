@@ -358,4 +358,76 @@ public class VoteDao {
             session.close();
         }
     }
+    public List<VoteListInfo> getVoteListInfo(int start,int limit){
+        SqlSession session=factory.openSession();
+        try{
+            Map<String,Integer> map=new HashMap<>();
+            map.put("start",start);
+            map.put("limit",limit);
+            return session.selectList("voteList",map);
+        }finally {
+            session.close();
+        }
+    }
+    public int getVoteListInfoSize(){
+        SqlSession session=factory.openSession();
+        try{
+            return session.selectOne("voteListCount");
+        }finally {
+            session.close();
+        }
+    }
+    public List<VoteListInfo> getVoteListInfoWithSearch(int start,int limit,String content){
+        SqlSession session=factory.openSession();
+        try{
+            Map<String,Object> map=new HashMap<>();
+            map.put("start",start);
+            map.put("limit",limit);
+            map.put("content","%"+content+"%");
+            return session.selectList("voteListWithSearchContent",map);
+        }finally {
+            session.close();
+        }
+    }
+    public int getVoteListInfoWithSearchSize(String content){
+        SqlSession session=factory.openSession();
+        try{
+            Map<String,Object> map=new HashMap<>();
+            map.put("content","%"+content+"%");
+            return session.selectOne("voteListWithSearchContentSize",map);
+        }finally {
+            session.close();
+        }
+    }
+    public List<UserVoteHistory> getMyVoteOption(int userId,int topicId){
+        SqlSession session=factory.openSession();
+        try{
+            Map<String,Integer> map=new HashMap<>();
+            map.put("userId",userId);
+            map.put("topicId",topicId);
+            return session.selectList("getMyVoteOptionInTopic",map);
+        }finally {
+            session.close();
+        }
+    }
+    public List<VoteTopic> getUserVoteTopicsByUserId(int userId, int start,int limit){
+        SqlSession session=factory.openSession();
+        try{
+            Map<String,Integer> map=new HashMap<>();
+            map.put("userId",userId);
+            map.put("start",start);
+            map.put("limit",limit);
+            return session.selectList("userVoteTopicList",map);
+        }finally {
+            session.close();
+        }
+    }
+    public int getUserVoteTopicsSizeByUserId(int userId){
+        SqlSession session=factory.openSession();
+        try{
+            return session.selectOne("userVoteTopicListSize",userId);
+        }finally {
+            session.close();
+        }
+    }
 }

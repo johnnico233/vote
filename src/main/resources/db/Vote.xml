@@ -33,6 +33,10 @@
     <select id="getVoteTopic" resultMap="voteTopicMap">
         select * from vote_topic where vote_id = #{id};
     </select>
+    <select id="getMyVoteOptionInTopic" resultType="vote.domain.vote.UserVoteHistory">
+      select vote_id as voteId,user_id as userId,item_id as optionId from vote_history
+      where user_id = #{userId} and vote_id = #{topicId};
+    </select>
     <select id="getVoteTopicList" resultMap="voteTopicMap">
         select * from vote_topic where usable = #{usable} limit #{start},#{end};
     </select>
@@ -66,11 +70,11 @@
 
     <select id="getVoteMessage" resultMap="voteMessageMap" >
         SELECT v.*,user_name,user_whatsup ,u.user_id,last_login_time,user_name,user_avatar from user_info u,vote_message v
-        where u.user_id = v.user_id and v.vote_id = #{id} limit #{index} ,#{step};
+        where u.user_id = v.user_id and v.vote_id = #{id} and available limit #{index} ,#{step};
     </select>
 
     <select id="getVoteMessageCount" resultType="java.lang.Integer">
-        select count(*) from vote_message where vote_id = #{id}
+        select count(*) from vote_message where vote_id = #{id} and available
     </select>
     
     <parameterMap id="uploadVoteItemMap" type="java.util.Map">
@@ -238,5 +242,42 @@
         select count(*) from dustbin b left join vote_message v on ban_id = v.message_id
         where b.ban_type=3 and v.user_id = #{id} ;
     </select>
-    
+
+    <resultMap id="voteListWithUserMap" type="vote.domain.user.User">
+        <result property="userId" column="user_id"/>
+        <result property="username" column="user_name"/>
+    </resultMap>
+    <resultMap id="voteListWithVoteTopicMap" type="vote.domain.vote.VoteTopic">
+        <result property="id" column="vote_id"/>
+        <result property="isMulti" column="is_multi"/>
+        <result property="content" column="vote_content"/>
+        <result property="startTime" column="start_time"/>
+        <result property="endTime" column="end_time"/>
+        <result property="userId" column="user_id"/>
+        <result property="topic" column="vote_topic"/>
+    </resultMap>
+    <resultMap id="voteListMap" type="vote.domain.vote.VoteListInfo">
+        <association property="voteTopic" javaType="vote.domain.vote.VoteTopic" resultMap="voteListWithVoteTopicMap"/>
+        <association property="user" javaType="vote.domain.user.User" resultMap="voteListWithUserMap"/>
+    </resultMap>
+    <select id="voteList" resultMap="voteListMap">
+        select * from vote_topic left join user_info using(user_id) where usable limit #{start},#{limit}
+    </select>
+    <select id="voteListCount" resultType="java.lang.Integer">
+        select Count(*) from vote_topic where usable;
+    </select>
+    <select id="voteListWithSearchContent" resultMap="voteListMap">
+        SELECT * FROM vote_topic left join user_info using(user_id) where usable and vote_topic like #{content}
+        limit #{start},#{limit};
+    </select>
+    <select id="voteListWithSearchContentSize" resultType="java.lang.Integer">
+        select count(*) from vote_topic where usable and vote_topic like #{content}
+    </select>
+
+    <select id="userVoteTopicList" resultMap="voteTopicMap">
+        select * from vote_topic where user_id = #{userId} limit #{start},#{limit};
+    </select>
+    <select id="userVoteTopicListSize" resultType="java.lang.Integer">
+        select COUNT(*) from vote_topic where user_id = #{userId}
+    </select>
 </mapper>

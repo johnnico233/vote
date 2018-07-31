@@ -172,8 +172,8 @@ function clickHandler(){
 }
 function sendSignUpInfo2Server(){
     var data={"account":$("#account").val(),"password":$("#password").val(),"username":$("#username").val(),
-              "birth":$("#year").val()+"-"+$("#month").val()+"-"+$("#day").val(),"phone":$("#phone").val(),
-        "email":$("#email").val(),"sex":$("input[type=radio]:checked").val(),"type":2};
+              "birth":$("#year").val()+"-"+$("#month").val()+"-"+$("#day").val()+" 00:00","phone":$("#phone").val(),
+        "email":$("#email").val(),"sex":$("input[type='radio']:checked").val(),"type":2};
     $.ajax({
         url:"/"+$("#web-local").html()+"/signUp/addNewUser",
         type:"post",
@@ -185,8 +185,10 @@ function sendSignUpInfo2Server(){
             'PHONE_EXIST':6,"EMAIL_EXIST":7};
         var location={1:"账号已经被注册",4:"昵称已经存在",6:"电话号码已被注册",7:"邮箱已经存在"};
         console.log(json);
-        if(json.code=="SUCCESS")
+        if(json.code=="SUCCESS"){
             alert("注册成功");
+            window.location.href="/"+$("#web-local").html()+"/";
+        }
         else{
             var pos=hint[json.code];
             var hint=$("p").eq(pos).find("span");
@@ -199,7 +201,6 @@ function sendSignUpInfo2Server(){
     });
 }
 function sendSth2Server(url,data,errorHint,successWord,errorWord){
-    console.log(errorHint);
     $.ajax({
         url:url,
         type:"post",
