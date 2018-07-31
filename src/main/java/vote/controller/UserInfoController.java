@@ -79,8 +79,7 @@ public class UserInfoController {
     }
 
     @RequestMapping(value = "/{id}/uploadFile", method = RequestMethod.POST)
-    public @ResponseBody
-    Result uploadPhoto(@PathVariable int id, @RequestParam("file") MultipartFile multipartFile) {
+    public @ResponseBody Result uploadPhoto(@PathVariable int id, @RequestParam("file") MultipartFile multipartFile) {
         if (multipartFile != null) {
             String path = multipartFile.getOriginalFilename();
             if (!path.endsWith(".png") && !path.endsWith(".jpg") && !path.endsWith(".jpeg"))
@@ -105,8 +104,7 @@ public class UserInfoController {
     }
 
     @RequestMapping(value = "/{id}/updateUserInfo", method = RequestMethod.POST)
-    public @ResponseBody
-    Result updateUserInfo(@PathVariable int id, @RequestBody User user) {
+    public @ResponseBody Result updateUserInfo(@PathVariable int id, @RequestBody User user) {
         //wait for modify~
         System.out.println(user);
         ResultCode resultCode = userService.updateUserInfo(user);
@@ -130,22 +128,19 @@ public class UserInfoController {
     }
 
     @RequestMapping(value = "/checkPhoneExistExceptMe", method = RequestMethod.POST)
-    public @ResponseBody
-    Result checkPhoneExistExceptMe(@RequestBody User user) {
+    public @ResponseBody Result checkPhoneExistExceptMe(@RequestBody User user) {
         ResultCode code = userService.checkPhoneNotExistExceptMe(user) ? ResultCode.SUCCESS : ResultCode.PHONE_EXIST;
         return new Result(code, code == ResultCode.SUCCESS ? "" : "电话号码已存在");
     }
 
     @RequestMapping(value = "/checkEmailExistExceptMe", method = RequestMethod.POST)
-    public @ResponseBody
-    Result checkEmailExistExceptMe(@RequestBody User user) {
+    public @ResponseBody Result checkEmailExistExceptMe(@RequestBody User user) {
         ResultCode code = userService.checkEmailNotExistExceptMe(user) ? ResultCode.SUCCESS : ResultCode.EMAIL_EXIST;
         return new Result(code, code == ResultCode.SUCCESS ? "" : "Email已存在");
     }
 
     @RequestMapping(value = "/checkInfoExceptMe", method = RequestMethod.POST)
-    public @ResponseBody
-    Result checkInfoExceptMe(@RequestBody User user) {
+    public @ResponseBody Result checkInfoExceptMe(@RequestBody User user) {
         ResultCode code = userService.checkUserInfoNotExistExceptMe(user);
         String errorWord = "";
         if (code == ResultCode.EMAIL_EXIST)

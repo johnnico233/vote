@@ -316,6 +316,9 @@ function setMyVote(){
         var input=$(".skip-block input[type='number']");
         var inputBtn=$(".skip-block button:nth-of-type(2)");
         setSKipButton(preBtn,nextBtn,input,inputBtn,idx,total,url);
+        $.each($(".user-vote-manager tr:nth-of-type(n+2) td:nth-of-type(3)"),function(idx,elem){
+            translateTimeWithConcrete($(elem));
+        })
     }
 }
 //我的留言设置

@@ -26,17 +26,6 @@ public class VoteAspect {
                 int userId=(int)httpSession.getAttribute("userID");
                 model.addAttribute("userID",userId);
                 model.addAttribute("user",userService.getUserOverviewInfo(userId));
-            }
-        }
-    }
-    @Before("execution(* vote.controller.UserInfoController.*(..))")
-    public void checkUserValid(JoinPoint joinPoint) {
-        Object[] args = joinPoint.getArgs();
-        if (args != null && args.length >= 2 && args[0] instanceof HttpSession && args[1] instanceof Model) {
-            HttpSession httpSession = (HttpSession) args[0];
-            Model model = (Model) args[1];
-            if (httpSession.getAttribute("userID") != null) {
-                int userId = (int) httpSession.getAttribute("userID");
                 model.addAttribute("isAdmin", userService.checkUserValid(userId));
             }
         }
