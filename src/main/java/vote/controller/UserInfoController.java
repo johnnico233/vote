@@ -493,7 +493,6 @@ public class UserInfoController {
                 cookie.setMaxAge(0);
                 cookie.setPath("/vote/");
                 response.addCookie(cookie);
-                System.out.println("before value: "+cookie.getMaxAge());
                 break;
             }
         }

@@ -1,10 +1,6 @@
 package vote.filter;
 
-
-import org.springframework.beans.factory.annotation.Value;
-
 import javax.servlet.*;
-import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;

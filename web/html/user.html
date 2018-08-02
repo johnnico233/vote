@@ -139,7 +139,7 @@
                             </tr>
                             <tr th:each="followUser :${followList}">
                                 <td><img th:src="'/'+${local}+'/avatar/'+${followUser.avatar}"></td>
-                                <td><a th:href="'/'+${local}+'/user'+${followUser.userId}" th:text="${followUser.username}"></a></td>
+                                <td><a th:href="'/'+${local}+'/user/'+${followUser.userId}" th:text="${followUser.username}"></a></td>
                                 <td th:text="${followUser.lastLogin}"></td>
                                 <td th:text="${followUser.followTime}"></td>
                                 <td><button class="btn btn-danger">取消关注</button></td>
